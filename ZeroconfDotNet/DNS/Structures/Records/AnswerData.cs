@@ -29,7 +29,7 @@ namespace ZeroconfDotNet.DNS.Records
                 {
                     sb.Append(" ");
                 }
-                sb.Append(data[i].ToString("X:2"));
+                sb.Append(data[i].ToString("X2"));
                 sb.Append(" ");
             }
             return sb.ToString();

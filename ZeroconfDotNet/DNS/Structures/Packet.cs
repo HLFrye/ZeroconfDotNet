@@ -18,7 +18,18 @@ namespace ZeroconfDotNet.DNS
         public IList<Authority> Authority { get; set; }
         public IList<Additional> Additional { get; set; }
 
-        public bool IsQuery { get { return (Flags & 0x80) == 0; } }
+        public bool IsQuery
+        {
+            get
+            {
+                return (Flags & 0x80) == 0;
+            }
+            set
+            {
+                Flags = (UInt16)((Flags & 0x7f) | (value ? 0x80 : 0x00));
+            }
+
+        }
 
         public void Add(Query query)
         {

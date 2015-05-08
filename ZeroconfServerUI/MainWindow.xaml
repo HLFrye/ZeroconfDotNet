@@ -7,11 +7,12 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" Margin="20,20,20,20" Name="MessageDisplay" />
+        <TextBox Grid.Row="0" Margin="20,20,20,20" Name="MessageDisplay" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" />
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Click="Button_Start">Start Service</Button>
             <Button Click="Button_Stop">Stop Service</Button>
             <Button Click="Button_Save">Save Log</Button>
+            <Button Click="Button_Send">Send Packet</Button>
         </StackPanel>
     </Grid>
 </Window>

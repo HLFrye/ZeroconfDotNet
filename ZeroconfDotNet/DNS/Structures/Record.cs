@@ -30,7 +30,16 @@ namespace ZeroconfDotNet.DNS
         }
 
         public UInt16 RecordType { get; set; }
-        public UInt16 Class { get { return (UInt16)(_rawClass & 0x7fff); } }
+        public UInt16 Class {
+            get
+            {
+                return (UInt16)(_rawClass & 0x7fff);
+            }
+            set
+            {
+                _rawClass = (UInt16)((value & 0x7fff) | (_rawClass & 0x8000));
+            }
+        }
         public string Name { get; set; }
 
         public override string ToString()

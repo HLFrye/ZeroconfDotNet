@@ -18,87 +18,28 @@ using ZeroconfDotNet.DNS;
 
 namespace ZeroconfServerUI
 {
-    delegate void RequestReceivedDelegate(Packet request, IPEndPoint endPoint);
-    interface IMDNSService
-    {
-        void Start();
-        void Stop();
-        event RequestReceivedDelegate RequestReceived;
-    }
-
-    class MDNSService : IMDNSService
-    {
-        readonly Thread _thread;
-
-        public MDNSService()
-        {
-            _thread = new Thread(new ThreadStart(ServiceMethod));
-            _thread.Name = "MDNS Service Thread";
-            _thread.IsBackground = true;
-        }
-
-        public void ServiceMethod()
-        {
-            var client = new UdpClient();
-            client.Client.ExclusiveAddressUse = false;
-            client.Client.Bind(new IPEndPoint(IPAddress.Parse("192.168.16.1"), 5353));
-
-            client.JoinMulticastGroup(IPAddress.Parse("224.0.0.251"));
-
-            SendTestRequest(client);
-
-            IPEndPoint remoteEndPoint = null;
-            while (true)
-            {
-                var received = client.Receive(ref remoteEndPoint);
-                try
-                {
-                    RequestReceived(PacketReader.Read(received), remoteEndPoint);
-                }
-                catch (Exception)
-                {}
-            }
-        }
-
-        public void SendTestRequest(UdpClient client)
-        {
-            //var packet = new DNSPacket();
-            //packet.Add(new DNSQuery("_pubtest._tcp", 12, 1));
-            //var data = packet.Serialize();
-            //client.Send(data, data.Length, new IPEndPoint(IPAddress.Parse("224.0.0.241"), 5353));
-        }
-
-        public void Start()
-        {
-            if (!_thread.IsAlive)
-            {
-                _thread.Start();   
-            }
-        }
-
-        public void Stop()
-        {
-            if (_thread.IsAlive)
-            {
-                _thread.Abort();
-            }
-        }
-
-        public event RequestReceivedDelegate RequestReceived = delegate { };
-    }
-
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        IMDNSService _service;
+        ServiceCore _service;
         public MainWindow()
         {
             InitializeComponent();
-            _service = new MDNSService();
-            _service.RequestReceived += _service_RequestReceived;
+            _service = new ServiceCore();
+            _service.PacketReceived += _service_PacketReceived;
+        }
+
+        void _service_PacketReceived(Packet p, IPEndPoint endPoint)
+        {
+            Dispatcher.Invoke((Action)(() =>
+            {
+                this.MessageDisplay.AppendText(string.Format("Received from {0}:{1}\n", endPoint.Address, endPoint.Port));
+                this.MessageDisplay.AppendText(p.ToString());
+                this.MessageDisplay.AppendText("\n\n");
+                this.MessageDisplay.ScrollToEnd();
+            }));
         }
 
         string CreateString(byte[] request)
@@ -118,20 +59,6 @@ namespace ZeroconfServerUI
             return sb.ToString();
         }
 
-        void _service_RequestReceived(Packet request, IPEndPoint endPoint)
-        {
-            Dispatcher.Invoke((Action)(() =>
-            {
-                this.MessageDisplay.AppendText(string.Format("Received from {0}:{1}\n", endPoint.Address, endPoint.Port));
-                this.MessageDisplay.AppendText(string.Format("Questions = {0}\n", request.Questions));
-                foreach (var i in request.Queries)
-                {
-                    this.MessageDisplay.AppendText(string.Format("Request for {0}\n", string.Join(".", i.Record.Name)));
-                    this.MessageDisplay.AppendText(string.Format("Request type {0}\n", i.Record.RecordType));
-                }
-                this.MessageDisplay.ScrollToEnd();
-            }));
-        }
 
         private void Button_Start(object sender, RoutedEventArgs e)
         {
@@ -146,6 +73,28 @@ namespace ZeroconfServerUI
         private void Button_Save(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Button_Send(object sender, RoutedEventArgs e)
+        {
+            var wnd = new CreatePacketWindow();
+            var result = wnd.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                var packet = new Packet();
+                packet.IsQuery = true;
+                packet.Queries.Add(new Query()
+                {
+                    IsMulticast = true,
+                    Record = new Record()
+                    {
+                        Name = wnd.RequestName,
+                        Class = 1,
+                        RecordType = (UInt16)wnd.SelectedQueryType,
+                    },
+                });
+                this._service.SendPacket(packet);
+            }
         }
     }
 }
