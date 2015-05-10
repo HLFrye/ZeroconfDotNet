@@ -7,6 +7,7 @@ namespace ZeroconfDotNet.Utils
 {
     public interface ITimer
     {
+        void FireNext(int seconds);
         event Action Fired;
     }
 }
