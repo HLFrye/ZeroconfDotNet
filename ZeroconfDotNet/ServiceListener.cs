@@ -5,11 +5,24 @@ using System.Text;
 
 namespace ZeroconfDotNet
 {
-    public delegate IEnumerable<ServiceInfo> FindServicesDelegate(string host);
+    delegate void ServiceChanged(ServiceInfo service);
+    class ServiceWatcher
+    {
+        public IEnumerable<ServiceInfo> Services;
+        public ServiceChanged ServiceAdded = delegate { };
+        public ServiceChanged ServiceExpired = delegate { };
+        public void Refresh()
+        {
+
+        }
+    }
 
     class ServiceListener : IDisposable, ZeroconfDotNet.IServiceListener
     {
-        public event FindServicesDelegate FindServices;
+        public ServiceWatcher FindService(string name)
+        {
+            return null;
+        }
 
         public void Start()
         {
@@ -26,14 +39,6 @@ namespace ZeroconfDotNet
 
         }
 
-        void ServiceProcess()
-        {
-
-        }
-
-        byte[] GenerateTxtRecord(ServiceInfo info)
-        {
-            return info.ToTxtRecord();
-        }
+        public event FindServicesDelegate FindServices;
     }
 }
