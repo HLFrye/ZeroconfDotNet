@@ -67,7 +67,6 @@ namespace ZeroconfServerUI
 
         private void Button_Stop(object sender, RoutedEventArgs e)
         {
-            _service.Stop();
         }
 
         private void Button_Save(object sender, RoutedEventArgs e)

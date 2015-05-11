@@ -61,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="CacheTests.cs" />
+    <Compile Include="RequestSenderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZeroconfDotNet\ZeroconfDotNet.csproj">

@@ -11,30 +11,18 @@ namespace ZeroconfDotNet.DNS
 {
     public delegate void PacketReceivedDelegate(Packet p, IPEndPoint endPoint);
 
-    public class ServiceCore
+    public class ServiceCore : ZeroconfDotNet.DNS.IServiceCore
     {
-        private readonly Thread workerThread;
-        private readonly Queue<Packet> packetQueue = new Queue<Packet>();
-        private readonly object packetLock = new object();
-
         public ServiceCore()
         {
-            workerThread = new Thread(new ThreadStart(ServiceThread));
-            workerThread.IsBackground = true;
-        }
+            var client = new UdpClient();
+            client.Client.ExclusiveAddressUse = false;
+            client.Client.Bind(new IPEndPoint(IPAddress.Parse("192.168.16.1"), 5353));
 
-        public void Start()
-        {
-            if (!workerThread.IsAlive)
-                workerThread.Start();
+            client.JoinMulticastGroup(IPAddress.Parse("224.0.0.251"));
+            Client = client;
         }
-
-        public void Stop()
-        {
-            if (workerThread.IsAlive)            
-                workerThread.Abort();            
-        }
-
+        
         public event PacketReceivedDelegate PacketReceived;
 
         public void SendPacket(Packet p)
@@ -44,16 +32,12 @@ namespace ZeroconfDotNet.DNS
         }
 
         UdpClient Client;
+        bool _started = false;
 
-        private void ServiceThread()
+        public void Start()
         {
-            var client = new UdpClient();
-            client.Client.ExclusiveAddressUse = false;
-            client.Client.Bind(new IPEndPoint(IPAddress.Parse("192.168.16.1"), 5353));
-
-            client.JoinMulticastGroup(IPAddress.Parse("224.0.0.251"));
-            Client = client;
-            Client.BeginReceive(new AsyncCallback(Receive), null);        
+            if (!_started)
+                Client.BeginReceive(new AsyncCallback(Receive), null);        
         }
 
         private void Receive(IAsyncResult res)
