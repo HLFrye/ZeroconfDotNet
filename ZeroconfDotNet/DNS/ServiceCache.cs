@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Threading;
 using ZeroconfDotNet.Utils;
+using ZeroconfDotNet.DNS.Records;
 
 namespace ZeroconfDotNet.DNS
 {
@@ -124,5 +125,47 @@ namespace ZeroconfDotNet.DNS
                 }
             }
         }
+    }
+
+    class WatchedService
+    {
+        public WatchService(string serviceName)
+
+        public void AddAnswer(PTRAnswer ptr)
+        {
+
+        }
+    }
+
+    class ServiceCache2 : IServiceCache2
+    {
+        IRecordCache _recordCache;
+
+        public ServiceCache2(IRecordCache recordCache)
+        {
+            _recordCache = recordCache;
+
+        }
+
+        public void AnswerAdded(Answer a)
+        {
+
+        }
+
+        public void AnswerExpired(Answer a)
+        {
+
+        }
+
+        public void WatchService(string name)
+        {
+            
+        }
+
+
+
+        public event Action<ServiceInfo> ServiceAdded;
+
+        public event Action<ServiceInfo> ServiceExpired;
     }
 }

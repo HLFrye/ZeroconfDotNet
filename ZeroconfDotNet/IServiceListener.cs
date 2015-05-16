@@ -10,8 +10,8 @@ namespace ZeroconfDotNet
     public interface IServiceListener
     {
         void Dispose();
-        event FindServicesDelegate FindServices;
         void Start();
         void Stop();
+        ServiceWatcher FindService(string name);
     }
 }
