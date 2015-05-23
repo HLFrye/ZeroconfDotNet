@@ -15,7 +15,8 @@ namespace ZeroconfDotNet
             Data = new Dictionary<string, string>();
         }
 
-        public IPEndPoint EndPoint { get; set; }
+        public IPAddress IP4Address { get; set; }
+        public IPAddress IP6Address { get; set; }
 
         public UInt16 Port
         { get; set;}

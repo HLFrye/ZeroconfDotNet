@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DNS\DomainName.cs" />
     <Compile Include="DNS\IServiceCache.cs" />
     <Compile Include="DNS\IServiceCore.cs" />
     <Compile Include="DNS\ServiceCache.cs" />

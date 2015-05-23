@@ -43,6 +43,7 @@ namespace ZeroconfDotNet
 
         public ServiceWatcher FindService(string name)
         {
+            throw new NotImplementedException();
             var watcher = new ServiceWatcher(this, name);
             if (_watchers.ContainsKey(name))
             {

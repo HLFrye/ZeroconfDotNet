@@ -129,13 +129,18 @@ namespace ZeroconfDotNet.DNS
 
     class WatchedService
     {
-        public WatchService(string serviceName)
+        public WatchedService(string serviceName)
+        {
+
+        }
 
         public void AddAnswer(PTRAnswer ptr)
         {
 
         }
     }
+
+    interface IRecordCache { }
 
     class ServiceCache2 : IServiceCache2
     {
