@@ -22,6 +22,7 @@ namespace ZeroconfDotNet
         { get; set;}
 
         public string Name { get; set; }
+        public string Protocol { get; set; }
         private int? _textVers = 1;
         public int? TextVers
         {
@@ -36,8 +37,8 @@ namespace ZeroconfDotNet
             }
         }
 
-        public Dictionary<string, string> Data { get; set; }
-        public List<string> Flags { get; set; }
+        public IDictionary<string, string> Data { get; set; }
+        public IList<string> Flags { get; set; }
         public int Priority { get; set; }
         public int Weight { get; set; }
 
