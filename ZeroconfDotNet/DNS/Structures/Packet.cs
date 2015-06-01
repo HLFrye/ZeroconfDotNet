@@ -26,7 +26,7 @@ namespace ZeroconfDotNet.DNS
             }
             set
             {
-                Flags = (UInt16)((Flags & 0x7f) | (value ? 0x80 : 0x00));
+                Flags = (UInt16)((Flags & 0x7f) | (value ? 0x00 : 0x80));
             }
 
         }
