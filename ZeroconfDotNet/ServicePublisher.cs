@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ZeroconfDotNet.DNS;
 
 namespace ZeroconfDotNet
 {
@@ -19,8 +20,8 @@ namespace ZeroconfDotNet
         private IList<Tuple<string, ServiceCallback>> _callbacks = new List<Tuple<string, ServiceCallback>>();
         private object _lookupLock = new object();
         private bool _started = false;
-        public ServicePublisher()
-            :this(new ServiceListener())
+        public ServicePublisher(IServiceCache2 cache)
+            :this(new ServiceListener(cache))
         {
             
         }
@@ -28,7 +29,8 @@ namespace ZeroconfDotNet
         public ServicePublisher(IServiceListener listener)
         {
             _listener = listener;
-            listener.FindServices += listener_FindServices;
+            //_listener.FindService
+            //listener.FindServices += listener_FindServices;
         }
 
         IEnumerable<ServiceInfo> listener_FindServices(string host)

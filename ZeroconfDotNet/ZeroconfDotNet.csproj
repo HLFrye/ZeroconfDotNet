@@ -42,8 +42,10 @@
   <ItemGroup>
     <Compile Include="DNS\IServiceCache.cs" />
     <Compile Include="DNS\IServiceCore.cs" />
+    <Compile Include="DNS\Network\NetworkStatusChanged.cs" />
     <Compile Include="DNS\ServiceCache.cs" />
     <Compile Include="DNS\ServiceCore.cs" />
+    <Compile Include="DNS\ServiceCoreStatic.cs" />
     <Compile Include="DNS\Structures\Additional.cs" />
     <Compile Include="DNS\Structures\Answer.cs" />
     <Compile Include="DNS\Structures\Authority.cs" />

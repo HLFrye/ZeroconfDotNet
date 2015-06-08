@@ -11,4 +11,11 @@ namespace ZeroconfDotNet.DNS
         void AddPacket(Packet p);
         event RequestUpdateDelegate RequestUpdate;
     }
+
+    public interface IServiceCache2
+    {
+        void WatchService(string name);
+        event Action<ServiceInfo> ServiceAdded;
+        event Action<ServiceInfo> ServiceExpired;
+    }
 }
