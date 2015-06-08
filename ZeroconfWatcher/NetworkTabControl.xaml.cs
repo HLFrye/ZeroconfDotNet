@@ -23,5 +23,12 @@ namespace ZeroconfWatcher
         {
             InitializeComponent();
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as NetworkTab;
+            vm.AddSearch(searchInput.Text);
+            searchInput.Text = "";
+        }
     }
 }

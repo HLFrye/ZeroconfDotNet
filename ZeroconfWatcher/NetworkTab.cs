@@ -20,7 +20,7 @@ namespace ZeroconfWatcher
             IP4Address = iface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(x => x.Address.ToString()).First();
             IP6Address = iface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).Select(x => x.Address.ToString()).First();
 
-            TabContent = new FrameworkElement();
+            TabContent = new NetworkTabControl() { DataContext = this };
         }
 
         public string TabCaption { get; set; }
