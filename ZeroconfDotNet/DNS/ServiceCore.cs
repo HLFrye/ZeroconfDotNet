@@ -47,10 +47,15 @@ namespace ZeroconfDotNet.DNS
         public ServiceCore(NetworkInterface iface)
         {
             _network = iface;
+            var ip4Addr = iface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(x => x.Address).First();
+            _localEndpoint = new IPEndPoint(ip4Addr, 5353);
 
             var client = new UdpClient();
+            client.Client.EnableBroadcast = true;
+            client.Client.ReceiveBufferSize = 1024;
             client.Client.ExclusiveAddressUse = false;
-            client.Client.Bind(new IPEndPoint(IPAddress.Parse("192.168.16.1"), 5353));
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+            client.Client.Bind(_localEndpoint);
 
             client.JoinMulticastGroup(IPAddress.Parse("224.0.0.251"));
             Client = client;
@@ -66,18 +71,37 @@ namespace ZeroconfDotNet.DNS
 
         UdpClient Client;
         bool _started = false;
+        bool _stopped = false;
+        IPEndPoint _localEndpoint;
 
         public void Start()
         {
             if (!_started)
-                Client.BeginReceive(new AsyncCallback(Receive), null);        
+            {
+                Client.BeginReceive(new AsyncCallback(Receive), null);
+                _started = true;
+            }
+        }
+
+        public void Stop()
+        {
+            if (_started)
+            {
+                _stopped = true;
+                Client.Close();
+            }
         }
 
         private void Receive(IAsyncResult res)
         {
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 8000);
+            if (_stopped) 
+                return;
             byte[] received = Client.EndReceive(res, ref RemoteIpEndPoint);
-            PacketReceived(PacketReader.Read(received), RemoteIpEndPoint);                        
+            if (_localEndpoint != RemoteIpEndPoint)
+            {
+                PacketReceived(PacketReader.Read(received), RemoteIpEndPoint);
+            }
             Client.BeginReceive(new AsyncCallback(Receive), null);
         }
 

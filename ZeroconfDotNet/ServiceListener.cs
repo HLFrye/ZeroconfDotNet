@@ -3,21 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ZeroconfDotNet.DNS;
+using System.Net;
+using System.Net.NetworkInformation;
 
 namespace ZeroconfDotNet
 {
     public delegate void ServiceChanged(ServiceInfo service);
     public delegate void NameChanged(string newName);
 
-    class ServiceListener : IDisposable, ZeroconfDotNet.IServiceListener
+    public class ServiceListener : IDisposable, ZeroconfDotNet.IServiceListener
     {
-        private readonly IServiceCache2 _service;
-        private readonly Dictionary<string, IList<ServiceWatcher>> _watchers = new Dictionary<string, IList<ServiceWatcher>>();
-        public ServiceListener(IServiceCache2 cache)
+        public static ServiceListener CreateListener(NetworkInterface nic)
         {
+            var core = new ServiceCore(nic);
+            core.Start();
+            var timer = new ZeroconfDotNet.Utils.TimerUtil();
+            var cache = new ServiceCache(timer);
+            var manager = new ServiceWatchManager(core);
+            var service = new ServiceListener(cache, manager, core);
+            return service;
+        }
+
+        private readonly IServiceCore _core;
+        private readonly IServiceCache _service;
+        private readonly IServiceWatchManager _watchManager;
+        private readonly Dictionary<string, IList<ServiceWatcher>> _watchers = new Dictionary<string, IList<ServiceWatcher>>();
+        public ServiceListener(IServiceCache cache, IServiceWatchManager manager, IServiceCore core)
+        {
+            _core = core;
             _service = cache;
-            _service.ServiceAdded += _service_ServiceAdded;
-            _service.ServiceExpired += _service_ServiceExpired;
+            _watchManager = manager;
+//            _service.RequestUpdate
+//            _service.ServiceAdded += _service_ServiceAdded;
+//            _service.ServiceExpired += _service_ServiceExpired;
         }
 
         void _service_ServiceExpired(ServiceInfo obj)
@@ -35,21 +53,11 @@ namespace ZeroconfDotNet
                 watcher.AddService(obj);
             }
         }
-
-        void _service_PacketReceived(Packet p, System.Net.IPEndPoint endPoint)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public ServiceWatcher FindService(string name)
         {
-            throw new NotImplementedException();
-            var watcher = new ServiceWatcher(this, name);
-            if (_watchers.ContainsKey(name))
-            {
-                _watchers[name] = new List<ServiceWatcher>();
-            }
-            _watchers[name].Add(watcher);
+            var watcher = new ServiceWatcher(this, name, _watchManager);
+            return watcher;            
         }
         
         internal void RemoveWatcher(ServiceWatcher watcher)
@@ -69,7 +77,7 @@ namespace ZeroconfDotNet
 
         public void Dispose()
         {
-
+            _core.Stop();
         }
     }
 
@@ -86,8 +94,10 @@ namespace ZeroconfDotNet
         {
         }
 
-        internal ServiceWatcher(ServiceListener listener, string name)
+        internal ServiceWatcher(ServiceListener listener, string name, IServiceWatchManager manager)
         {
+            manager.WatchService(name, x => ServiceAdded(x));
+
             _listener = listener;
             Name = name;
         }

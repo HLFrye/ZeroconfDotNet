@@ -19,7 +19,8 @@ namespace ZeroconfWatcher
             Description = iface.Name;
             IP4Address = iface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(x => x.Address.ToString()).First();
             IP6Address = iface.GetIPProperties().UnicastAddresses.Where(x => x.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).Select(x => x.Address.ToString()).First();
-
+            _service = ServiceListener.CreateListener(iface);
+            Searches = new ObservableCollection<SearchInfo>();
             TabContent = new NetworkTabControl() { DataContext = this };
         }
 
@@ -30,16 +31,34 @@ namespace ZeroconfWatcher
         public FrameworkElement TabContent { get; set; }
         public ObservableCollection<SearchInfo> Searches { get; set; }
 
-        private object _service;
+        private IServiceListener _service;
+
+        public void Close()
+        {
+            _service.Dispose();
+        }
 
         public void AddSearch(string name)
         {
-
+            var watcher = _service.FindService(name);
+            var info = new SearchInfo() { Protocol = name };
+            Searches.Add(info);
+            watcher.ServiceAdded += x =>
+                {
+                    TabContent.Dispatcher.BeginInvoke(new Action(() => info.Services.Add(x)));
+                };
+            watcher.ServiceExpired += x => info.Services.Remove(x);
+            watcher.Start();
         }
 
 
         public class SearchInfo
         {
+            public SearchInfo()
+            {
+                Services = new ObservableCollection<ServiceInfo>();
+            }
+
             public string Protocol { get; set; }
             public ObservableCollection<ServiceInfo> Services { get; set; }
         }

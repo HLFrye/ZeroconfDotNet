@@ -33,7 +33,9 @@ namespace ZeroconfWatcher
             for (var i = 0; i < ip4networks.Count; ++i)
             {
                 var name = string.Format("Network {0}", i+1);
-                yield return new NetworkTab(ip4networks[i], name);
+                var tab = TryCreateTab(ip4networks[i], name);
+                if (tab != null)
+                    yield return tab;
             }
 
             //var ip6networks = NetworkInterface.GetAllNetworkInterfaces()
@@ -48,6 +50,26 @@ namespace ZeroconfWatcher
             //    yield return net;
             //}
 
+        }
+
+        NetworkTab TryCreateTab(NetworkInterface iface, string name)
+        {
+            try
+            {
+                return new NetworkTab(iface, name);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public void Close()
+        {
+            foreach (var tab in Networks)
+            {
+                tab.Close();
+            }
         }
     }
 }

@@ -20,8 +20,8 @@ namespace ZeroconfDotNet
         private IList<Tuple<string, ServiceCallback>> _callbacks = new List<Tuple<string, ServiceCallback>>();
         private object _lookupLock = new object();
         private bool _started = false;
-        public ServicePublisher(IServiceCache2 cache)
-            :this(new ServiceListener(cache))
+        public ServicePublisher(IServiceCache cache)
+            :this(new ServiceListener(cache, null, null))
         {
             
         }

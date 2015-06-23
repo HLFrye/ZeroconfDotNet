@@ -19,5 +19,8 @@ namespace ZeroconfDotNet.DNS
         //Start the service 
         //TODO: Am I sure this is necessary?
         void Start();
+
+        //Stop the service
+        void Stop();
     }
 }

@@ -31,9 +31,51 @@
                             <Label>Searching for: </Label>
                             <Label Content="{Binding Protocol}" />
                         </StackPanel>
+                        <ListBox DockPanel.Dock="Bottom" ItemsSource="{Binding Services}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0">Name</Label>
+                                        <Label Grid.Column="0" Grid.Row="1">Protocol</Label>
+                                        <Label Grid.Column="0" Grid.Row="2">IP4 Address</Label>
+                                        <Label Grid.Column="0" Grid.Row="3">IP6 Address</Label>
+                                        <Label Grid.Column="0" Grid.Row="4">Port</Label>
+                                        <Label Grid.Column="0" Grid.Row="5">Priority</Label>
+                                        <Label Grid.Column="0" Grid.Row="6">Weight</Label>
+                                        <Label Grid.Column="0" Grid.Row="7">Number of Flags</Label>
+                                        <Label Grid.Column="0" Grid.Row="8">Number of Vars</Label>
+                                        
+                                        <Label Grid.Column="1" Grid.Row="0" Content="{Binding Name}" />
+                                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding Protocol}" />
+                                        <Label Grid.Column="1" Grid.Row="2" Content="{Binding IP4Address}" />
+                                        <Label Grid.Column="1" Grid.Row="3" Content="{Binding IP6Address}" />
+                                        <Label Grid.Column="1" Grid.Row="4" Content="{Binding Port}" />
+                                        <Label Grid.Column="1" Grid.Row="5" Content="{Binding Priority}" />
+                                        <Label Grid.Column="1" Grid.Row="6" Content="{Binding Weight}" />
+                                        <Label Grid.Column="1" Grid.Row="7" Content="{Binding Flags.Count}" />
+                                        <Label Grid.Column="1" Grid.Row="8" Content="{Binding Data.Count}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-    </StackPanel>    
+    </StackPanel>        
 </UserControl>

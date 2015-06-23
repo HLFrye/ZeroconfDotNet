@@ -24,5 +24,11 @@ namespace ZeroconfWatcher
             DataContext = new MainVM();
             InitializeComponent();
         }
+
+        public void OnWindowClosing(object sender, EventArgs args)
+        {
+            var vm = DataContext as MainVM;
+            vm.Close();
+        }
     }
 }
