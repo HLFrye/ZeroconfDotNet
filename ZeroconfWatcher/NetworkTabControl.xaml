@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="ZeroconfWatcher.NetworkTabControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>Network adapter name: </Label>
+            <Label Content="{Binding Description}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>IPv4 Address</Label>
+            <Label Content="{Binding IP4Address}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>IPv6 Address</Label>
+            <Label Content="{Binding IP6Address}" />
+        </StackPanel>
+        <DockPanel>
+            <Button Margin="5,5,5,5" DockPanel.Dock="Right" Content="Begin search" Click="Button_Click_1"></Button>
+            <TextBox Margin="5,5,5,5" Name="searchInput"></TextBox>
+        </DockPanel>
+        <Label>Searches</Label>
+        <ListBox ItemsSource="{Binding Searches}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                            <Label>Searching for: </Label>
+                            <Label Content="{Binding Protocol}" />
+                        </StackPanel>
+                        <ListBox DockPanel.Dock="Bottom" ItemsSource="{Binding Services}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0">Name</Label>
+                                        <Label Grid.Column="0" Grid.Row="1">Protocol</Label>
+                                        <Label Grid.Column="0" Grid.Row="2">IP4 Address</Label>
+                                        <Label Grid.Column="0" Grid.Row="3">IP6 Address</Label>
+                                        <Label Grid.Column="0" Grid.Row="4">Port</Label>
+                                        <Label Grid.Column="0" Grid.Row="5">Priority</Label>
+                                        <Label Grid.Column="0" Grid.Row="6">Weight</Label>
+                                        <Label Grid.Column="0" Grid.Row="7">Number of Flags</Label>
+                                        <Label Grid.Column="0" Grid.Row="8">Number of Vars</Label>
+                                        
+                                        <Label Grid.Column="1" Grid.Row="0" Content="{Binding Name}" />
+                                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding Protocol}" />
+                                        <Label Grid.Column="1" Grid.Row="2" Content="{Binding IP4Address}" />
+                                        <Label Grid.Column="1" Grid.Row="3" Content="{Binding IP6Address}" />
+                                        <Label Grid.Column="1" Grid.Row="4" Content="{Binding Port}" />
+                                        <Label Grid.Column="1" Grid.Row="5" Content="{Binding Priority}" />
+                                        <Label Grid.Column="1" Grid.Row="6" Content="{Binding Weight}" />
+                                        <Label Grid.Column="1" Grid.Row="7" Content="{Binding Flags.Count}" />
+                                        <Label Grid.Column="1" Grid.Row="8" Content="{Binding Data.Count}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>        
+</UserControl>

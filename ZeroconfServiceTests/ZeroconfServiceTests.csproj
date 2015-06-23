@@ -62,6 +62,8 @@
     <Compile Include="SerializationTests.cs" />
     <Compile Include="CacheTests.cs" />
     <Compile Include="RequestSenderTests.cs" />
+    <Compile Include="UnitTest1.cs" />
+    <Compile Include="UnitTest2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZeroconfDotNet\ZeroconfDotNet.csproj">
