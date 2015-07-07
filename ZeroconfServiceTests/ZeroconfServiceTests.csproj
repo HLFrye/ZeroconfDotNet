@@ -64,6 +64,7 @@
     <Compile Include="RequestSenderTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="UnitTest2.cs" />
+    <Compile Include="Utils\ConnectedServiceMock.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZeroconfDotNet\ZeroconfDotNet.csproj">
