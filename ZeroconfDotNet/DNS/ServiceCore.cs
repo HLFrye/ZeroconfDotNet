@@ -65,8 +65,7 @@ namespace ZeroconfDotNet.DNS
 
         public void SendPacket(Packet p)
         {
-            var data = PacketWriter.Write(p);
-            Client.Send(data, data.Length, new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353));
+            SendPacket(p, new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353));
         }
 
         UdpClient Client;
@@ -140,6 +139,13 @@ namespace ZeroconfDotNet.DNS
                         return false;
                 }
             }
+        }
+
+
+        public void SendPacket(Packet p, IPEndPoint ep)
+        {
+            var data = PacketWriter.Write(p);
+            Client.Send(data, data.Length, ep);
         }
     }
 }

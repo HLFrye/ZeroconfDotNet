@@ -36,9 +36,14 @@ namespace ZeroconfDotNet
         {
  	        if (p.IsQuery)
             {
+                foreach (var query in p.Queries.Where(x => x.Record.Name == fullName))
+                {
+                    SendAddressResponse(p, query.IsMulticast ? null : endPoint);
+                }
+
                 foreach (var query in p.Queries.Where(x => x.Record.RecordType == PTRAnswer.RecordType))
                 {
-                    SendServiceResponses(query.Record.Name, p.TransactionID);
+                    SendServiceResponses(query.Record.Name, p, query.IsMulticast ? null : endPoint);
                 }
             }
             else
@@ -63,6 +68,30 @@ namespace ZeroconfDotNet
                             break;
                     }
                 }
+            }
+        }
+
+        private void SendAddressResponse(Packet p, IPEndPoint ep)
+        {
+            var packet = new Packet();
+            packet.TransactionID = p.TransactionID;
+            packet.IsQuery = false;
+            var ip4Address = GetIP4Address();
+            var ip6Address = GetIP6Address();
+            var a = AAnswer.Build(fullName, ip4Address, (UInt16)120, true, 1);
+            var aaaa = AAAAAnswer.Build(fullName, ip6Address, (UInt16)120, true, 1);
+            if (a != null)
+                packet.Answers.Add(a);
+            if (aaaa != null)
+                packet.Answers.Add(aaaa);
+
+            if (ep != null)
+            {
+                _service.SendPacket(p, ep);
+            }
+            else
+            {
+                _service.SendPacket(packet);
             }
         }
 
@@ -102,39 +131,47 @@ namespace ZeroconfDotNet
             _service.SendPacket(packet);
         }
 
-        private void SendServiceResponses(string name, UInt16 transactionId)
+        private void SendServiceResponses(string name, Packet p, IPEndPoint ep)
         {
             var services = _lookup[name].Select(x => x());
-            var packets = services.Select(x => BuildResponse(name, transactionId, x, GetIP4Address(), GetIP6Address()));
+            var packets = services.Select(x => BuildResponse(name, p.TransactionID, x, GetIP4Address(), GetIP6Address()));
             foreach (var packet in packets)
             {
-                _service.SendPacket(packet);
+                if (ep != null)
+                {
+                    _service.SendPacket(packet, ep);
+                }
+                else
+                {
+                    _service.SendPacket(packet);
+                }
             }
         }
 
-        private string GetIP4Address()
+        private IPAddress GetIP4Address()
         {
-            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).Select(x => x.Address.ToString()).FirstOrDefault();
+            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
         }
 
-        private string GetIP6Address()
+        private IPAddress GetIP6Address()
         {
-            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).Select(x => x.Address.ToString()).FirstOrDefault();
+            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).FirstOrDefault();
         }
 
-       private  Packet BuildResponse(string name, UInt16 id, ServiceInfo info, string ip4Address, string ip6Address)
+        private Packet BuildResponse(string name, UInt16 id, ServiceInfo info, IPAddress ip4Address, IPAddress ip6Address)
         {
             var ret = new Packet();
             ret.TransactionID = id;
             ret.Flags = 0x8400;
+            ret.IsQuery = false;
             var dnsName = name;
             var domainName = string.Join(".", info.Name, dnsName);
-            var machineName = LocalName;
+            var machineName = fullName;
             var ptr = PTRAnswer.Build(dnsName, domainName, 4500, false, 1);
             var txt = TXTAnswer.Build(domainName, 4500, info.Flags, info.Data, true, 1);
             var srv = SRVAnswer.Build(domainName, 120, info.Priority, info.Weight, info.Port, machineName, true, 1);
-            var a = AAnswer.Build(machineName, IPAddress.Parse(ip4Address), (UInt16)120, true, 1);
-            var aaaa = AAAAAnswer.Build(machineName, IPAddress.Parse(ip6Address), (UInt16)120, true, 1);
+            var a = AAnswer.Build(machineName, ip4Address, (UInt16)120, true, 1);
+            var aaaa = AAAAAnswer.Build(machineName, ip6Address, (UInt16)120, true, 1);
 
             ret.Answers.Add(ptr);
             ret.Answers.Add(txt);
@@ -160,6 +197,14 @@ namespace ZeroconfDotNet
                 {
                     SendNameCheck();
                 }
+            }
+        }
+
+        private string fullName
+        {
+            get
+            {
+                return _localName + ".local";
             }
         }
 

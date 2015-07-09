@@ -28,6 +28,9 @@ namespace ZeroconfDotNet.DNS.Records
 
         public static Answer Build(string name, IPAddress address, int TTL, bool flushCache, UInt16 cls)
         {
+            if (address == null)
+                return null;
+
             if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6)
                 throw new ArgumentException("Address must be an ipv6 address");
 

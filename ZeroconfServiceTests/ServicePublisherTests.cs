@@ -80,7 +80,7 @@ namespace ZeroconfServiceTests
         [TestMethod]
         public void RespondWithServiceInfo()
         {
-            var core = new Mock<IServiceCore>();
+            var core = BuildService("10.99.99.99", "fe80::20c:29ff:fe0d:e789");
             Packet received = null;
             core.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => received = x);
 
@@ -103,10 +103,15 @@ namespace ZeroconfServiceTests
 
                 Assert.IsFalse(received.IsQuery);
                 var ptrAnswer = received.Answers.Where(x => x.Record.RecordType == PTRAnswer.RecordType).First().Data as PTRAnswer;
-                Assert.AreEqual("_pubtest._tcp.local", ptrAnswer.DomainName);
-                
-                var srvAnswer = received.Answers.Where(x => x.Record.RecordType == SRVAnswer.RecordType).First().Data as SRVAnswer;
-                Assert.AreEqual("Pubtest._pubtest._tcp.local", srvAnswer.Name);
+                Assert.AreEqual("Pubtest._pubtest._tcp.local", ptrAnswer.DomainName);
+
+                var srv = received.Answers.Where(x => x.Record.RecordType == SRVAnswer.RecordType).First();
+                var srvAnswer = srv.Data as SRVAnswer;
+                Assert.AreEqual(SRVAnswer.GetService(srv.Record), "Pubtest");
+                Assert.AreEqual(SRVAnswer.GetProtocol(srv.Record), "_pubtest");
+                Assert.AreEqual(SRVAnswer.GetName(srv.Record), "_tcp.local");
+
+                //Assert.AreEqual("Pubtest._pubtest._tcp.local", srvAnswer.Name);
                 Assert.AreEqual(9999, srvAnswer.Port);
                 Assert.AreEqual(10, srvAnswer.Priority);
                 Assert.AreEqual(10, srvAnswer.Weight);
@@ -117,7 +122,7 @@ namespace ZeroconfServiceTests
                 Assert.AreEqual("TestValue", txtAnswer.Data["TestData"]);
 
                 var aAnswer = received.Answers.Where(x => x.Record.RecordType == AAnswer.RecordType).First().Data as AAnswer;
-                Assert.AreEqual(IPAddress.Parse("10.0.0.10"), aAnswer.Address);
+                Assert.AreEqual(IPAddress.Parse("10.99.99.99"), aAnswer.Address);
 
                 var aaaaAnswer = received.Answers.Where(x => x.Record.RecordType == AAAAAnswer.RecordType).First().Data as AAAAAnswer;
                 Assert.AreEqual(IPAddress.Parse("fe80::20c:29ff:fe0d:e789"), aaaaAnswer.Address);

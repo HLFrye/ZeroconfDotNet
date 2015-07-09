@@ -36,5 +36,11 @@ namespace ZeroconfServiceTests.Utils
         {
             throw new NotImplementedException();
         }
+
+
+        public void SendPacket(Packet p, System.Net.IPEndPoint ep)
+        {
+            PacketReceived(p, ep);
+        }
     }
 }
