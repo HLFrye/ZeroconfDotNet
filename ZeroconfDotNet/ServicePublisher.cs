@@ -176,8 +176,13 @@ namespace ZeroconfDotNet
             ret.Answers.Add(ptr);
             ret.Answers.Add(txt);
             ret.Answers.Add(srv);
-            ret.Answers.Add(aaaa);
-            ret.Answers.Add(a);
+
+            if (aaaa != null)
+                ret.Answers.Add(aaaa);
+
+            if (a != null)
+                ret.Answers.Add(a);
+
             return ret;
         }
 

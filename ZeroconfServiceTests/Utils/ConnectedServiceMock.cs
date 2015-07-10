@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using ZeroconfDotNet.DNS;
 
 namespace ZeroconfServiceTests.Utils
 {
     class ConnectedServiceMock : IServiceCore
     {
+        public ConnectedServiceMock(params string[] addresses)
+        {
+            Network = new ZeroconfDotNet.DNS.Network.NetworkInfo();
+            Network.Addresses = addresses.Select(x => IPAddress.Parse(x)).ToArray();
+        }
+
         public event ZeroconfDotNet.DNS.Network.NetworkStatusChangedDelegate NetworkStatusChanged;
 
         public bool Connected
@@ -17,7 +24,8 @@ namespace ZeroconfServiceTests.Utils
 
         public ZeroconfDotNet.DNS.Network.NetworkInfo Network
         {
-            get { return null; }
+            get;
+            set;
         }
 
         public void SendPacket(Packet p)
@@ -27,14 +35,16 @@ namespace ZeroconfServiceTests.Utils
 
         public event PacketReceivedDelegate PacketReceived;
 
+        public bool Running { get; set; }
+
         public void Start()
         {
-            throw new NotImplementedException();
+            Running = true;
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            Running = false;
         }
 
 
