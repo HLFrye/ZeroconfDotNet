@@ -54,6 +54,8 @@ namespace ZeroconfDotNet.DNS
             client.Client.EnableBroadcast = true;
             client.Client.ReceiveBufferSize = 1024;
             client.Client.ExclusiveAddressUse = false;
+            client.MulticastLoopback = true;
+            client.Client.MulticastLoopback = true;
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             client.Client.Bind(_localEndpoint);
 
@@ -97,7 +99,7 @@ namespace ZeroconfDotNet.DNS
             if (_stopped) 
                 return;
             byte[] received = Client.EndReceive(res, ref RemoteIpEndPoint);
-            if (_localEndpoint != RemoteIpEndPoint)
+//            if (_localEndpoint != RemoteIpEndPoint)
             {
                 PacketReceived(PacketReader.Read(received), RemoteIpEndPoint);
             }

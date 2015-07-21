@@ -43,7 +43,7 @@ namespace ZeroconfDotNet
 
                 foreach (var query in p.Queries.Where(x => x.Record.RecordType == PTRAnswer.RecordType))
                 {
-                    SendServiceResponses(query.Record.Name, p, query.IsMulticast ? null : endPoint);
+                    SendServiceResponses(query.Record.Name, p, !query.IsMulticast ? null : endPoint);
                 }
             }
             else
@@ -109,8 +109,8 @@ namespace ZeroconfDotNet
             int lastNumber = 0;
             if (match.Success)
             {
-                lastNumber = int.Parse(match.Groups[1].Value);
-                baseName = match.Groups[0].Value;
+                lastNumber = int.Parse(match.Groups[2].Value);
+                baseName = match.Groups[1].Value;
             }
 
             LocalName = baseName + ++lastNumber;
