@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfConsole", "..\Zeroc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfWatcher", "..\ZeroconfWatcher\ZeroconfWatcher.csproj", "{A43AE2A5-1E41-4D29-B043-5846682AE294}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfPublisher", "..\ZeroconfPublisher\ZeroconfPublisher.csproj", "{D5792AEA-87BE-43B5-B0B6-6AEB8DCFDEA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{A43AE2A5-1E41-4D29-B043-5846682AE294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A43AE2A5-1E41-4D29-B043-5846682AE294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A43AE2A5-1E41-4D29-B043-5846682AE294}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5792AEA-87BE-43B5-B0B6-6AEB8DCFDEA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5792AEA-87BE-43B5-B0B6-6AEB8DCFDEA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5792AEA-87BE-43B5-B0B6-6AEB8DCFDEA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5792AEA-87BE-43B5-B0B6-6AEB8DCFDEA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

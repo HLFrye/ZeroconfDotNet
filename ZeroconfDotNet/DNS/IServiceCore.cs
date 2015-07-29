@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using ZeroconfDotNet.DNS.Network;
 
 namespace ZeroconfDotNet.DNS
@@ -13,7 +14,8 @@ namespace ZeroconfDotNet.DNS
         NetworkInfo Network { get; }
 
         //Packet Send/Receive
-        void SendPacket(Packet p); 
+        void SendPacket(Packet p);
+        void SendPacket(Packet p, IPEndPoint ep);
         event PacketReceivedDelegate PacketReceived;
         
         //Start the service 

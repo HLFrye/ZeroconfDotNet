@@ -21,6 +21,7 @@ namespace ZeroconfDotNet.DNS
         {
             _service = core;
             _service.PacketReceived += _service_PacketReceived;
+            _service.Start();
         }
 
         void _service_PacketReceived(Packet p, IPEndPoint endPoint)
@@ -37,9 +38,12 @@ namespace ZeroconfDotNet.DNS
             IEnumerable<ServiceInfo> _activeServices = GetActiveServices();
             foreach (var info in _activeServices)
             {
-                foreach (var watcher in _watched[info.Protocol])
+                if (_watched.ContainsKey(info.Protocol))
                 {
-                    watcher.RaiseService(info);
+                    foreach (var watcher in _watched[info.Protocol])
+                    {
+                        watcher.RaiseService(info);
+                    }
                 }
             }
         }
@@ -226,27 +230,11 @@ namespace ZeroconfDotNet.DNS
             }
             _watched[serviceName].Add(new ServiceWatcher(added));
 
-            SendRequest(serviceName);
+            var repeater = new ServiceRequestRepeater(_service, serviceName, new Utils.TimerUtil());
+
+            //SendRequest(serviceName);
         }
-
-        private void SendRequest(string name)
-        {
-            var packet = new Packet();
-            packet.IsQuery = true;
-            packet.Queries.Add(new Query()
-            {
-                IsMulticast = true,
-                Record = new Record()
-                {
-                    Class = 1,
-                    Name = name,
-                    RecordType = 12,
-                }
-            });
-
-            _service.SendPacket(packet);
-        }
-
+        
         class StoredAddress : ITTL
         {
             private uint _ttl;

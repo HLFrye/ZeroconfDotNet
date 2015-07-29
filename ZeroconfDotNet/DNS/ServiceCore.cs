@@ -54,6 +54,8 @@ namespace ZeroconfDotNet.DNS
             client.Client.EnableBroadcast = true;
             client.Client.ReceiveBufferSize = 1024;
             client.Client.ExclusiveAddressUse = false;
+            client.MulticastLoopback = true;
+            client.Client.MulticastLoopback = true;
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             client.Client.Bind(_localEndpoint);
 
@@ -65,8 +67,7 @@ namespace ZeroconfDotNet.DNS
 
         public void SendPacket(Packet p)
         {
-            var data = PacketWriter.Write(p);
-            Client.Send(data, data.Length, new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353));
+            SendPacket(p, new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353));
         }
 
         UdpClient Client;
@@ -98,10 +99,30 @@ namespace ZeroconfDotNet.DNS
             if (_stopped) 
                 return;
             byte[] received = Client.EndReceive(res, ref RemoteIpEndPoint);
-            if (_localEndpoint != RemoteIpEndPoint)
+
+            Packet packet = null;
+            try
             {
-                PacketReceived(PacketReader.Read(received), RemoteIpEndPoint);
+                packet = PacketReader.Read(received);
             }
+            catch (Exception)
+            {
+                //Any exception and we got a malformed packet
+            }
+
+            if (packet != null)
+            {
+                try
+                {
+                    PacketReceived(packet, RemoteIpEndPoint);
+                }
+                catch (Exception)
+                {
+                    //Event handlers shouldn't throw this far up, but
+                    //we should continue producing packets if they do.
+                }
+            }
+            
             Client.BeginReceive(new AsyncCallback(Receive), null);
         }
 
@@ -140,6 +161,13 @@ namespace ZeroconfDotNet.DNS
                         return false;
                 }
             }
+        }
+
+
+        public void SendPacket(Packet p, IPEndPoint ep)
+        {
+            var data = PacketWriter.Write(p);
+            Client.Send(data, data.Length, ep);
         }
     }
 }

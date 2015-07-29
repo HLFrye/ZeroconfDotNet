@@ -48,6 +48,7 @@
     <Compile Include="DNS\ServiceCore.cs" />
     <Compile Include="DNS\ServiceCoreStatic.cs" />
     <Compile Include="DNS\ServiceWatcherHelpers\ITTL.cs" />
+    <Compile Include="DNS\ServiceWatcherHelpers\ServiceRequestRepeater.cs" />
     <Compile Include="DNS\ServiceWatcherHelpers\TTLDict.cs" />
     <Compile Include="DNS\ServiceWatcherHelpers\TTLList.cs" />
     <Compile Include="DNS\ServiceWatchManager.cs" />

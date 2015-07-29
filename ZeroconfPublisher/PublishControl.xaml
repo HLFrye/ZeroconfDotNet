@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="ZeroconfPublisher.PublishControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>Network adapter name:</Label>
+            <Label Content="{Binding Description}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>IPv4 Address</Label>
+            <Label Content="{Binding IP4Address}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label>IPv6 Address</Label>
+            <Label Content="{Binding IP6Address}" />
+        </StackPanel>
+        <Button Click="Button_Click_1" Content="Add Service" />
+        <ListBox ItemsSource="{Binding PublishedServices}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Label Content="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</UserControl>
