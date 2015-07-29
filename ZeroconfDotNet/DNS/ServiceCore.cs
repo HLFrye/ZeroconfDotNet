@@ -99,10 +99,30 @@ namespace ZeroconfDotNet.DNS
             if (_stopped) 
                 return;
             byte[] received = Client.EndReceive(res, ref RemoteIpEndPoint);
-//            if (_localEndpoint != RemoteIpEndPoint)
+
+            Packet packet = null;
+            try
             {
-                PacketReceived(PacketReader.Read(received), RemoteIpEndPoint);
+                packet = PacketReader.Read(received);
             }
+            catch (Exception)
+            {
+                //Any exception and we got a malformed packet
+            }
+
+            if (packet != null)
+            {
+                try
+                {
+                    PacketReceived(packet, RemoteIpEndPoint);
+                }
+                catch (Exception)
+                {
+                    //Event handlers shouldn't throw this far up, but
+                    //we should continue producing packets if they do.
+                }
+            }
+            
             Client.BeginReceive(new AsyncCallback(Receive), null);
         }
 
