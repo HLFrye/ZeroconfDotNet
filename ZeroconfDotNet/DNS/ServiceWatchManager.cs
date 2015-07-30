@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Net.NetworkInformation;
+
 using ZeroconfDotNet.DNS.Records;
 
 namespace ZeroconfDotNet.DNS
@@ -16,9 +18,10 @@ namespace ZeroconfDotNet.DNS
         private readonly TTLDict<ServiceData> _serviceData = new TTLDict<ServiceData>();
         private readonly TTLDict<ServiceConnection> _serviceConnections = new TTLDict<ServiceConnection>();
         private readonly Dictionary<string, TTLList<ServicePointer>> _servicePointer = new Dictionary<string, TTLList<ServicePointer>>();
-
-        public ServiceWatchManager(IServiceCore core)
+        private readonly NetworkInterface _nic;
+        public ServiceWatchManager(IServiceCore core, NetworkInterface nic)
         {
+            _nic = nic;
             _service = core;
             _service.PacketReceived += _service_PacketReceived;
             _service.Start();
@@ -222,13 +225,13 @@ namespace ZeroconfDotNet.DNS
             };
         }
 
-        public void WatchService(string serviceName, Action<ServiceInfo> added)
+        public void WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added)
         {
             if (!_watched.ContainsKey(serviceName))
             {
                 _watched[serviceName] = new List<ServiceWatcher>();
             }
-            _watched[serviceName].Add(new ServiceWatcher(added));
+            _watched[serviceName].Add(new ServiceWatcher(x => added(_nic, x));
 
             var repeater = new ServiceRequestRepeater(_service, serviceName, new Utils.TimerUtil());
 
@@ -360,6 +363,26 @@ namespace ZeroconfDotNet.DNS
                 _seenServices.Add(svc.Name);
                 _action(svc);
             }
+        }
+
+        public void StopWatching(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

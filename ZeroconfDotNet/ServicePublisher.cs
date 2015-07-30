@@ -16,7 +16,7 @@ namespace ZeroconfDotNet
     /// Main entry point.  Manages a mDNS listener that will respond
     /// to queries with any services registered to this publisher
     /// </summary>
-    public class ServicePublisher : IDisposable
+    public class ServicePublisher : IDisposable, ZeroconfDotNet.IServicePublisher
     {
         private readonly IServiceCore _service;
         private ILookup<string, ServiceCallback> _lookup;
@@ -265,6 +265,17 @@ namespace ZeroconfDotNet
         public void Dispose()
         {
             Stop();
+        }
+
+
+        public void AddService(System.Net.NetworkInformation.NetworkInterface network, string host, ServiceCallback callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddService(System.Net.NetworkInformation.NetworkInterface network, string host, ServiceInfo service)
+        {
+            throw new NotImplementedException();
         }
     }
 }
