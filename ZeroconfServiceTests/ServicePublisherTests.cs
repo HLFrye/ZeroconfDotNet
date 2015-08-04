@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZeroconfDotNet;
 using ZeroconfDotNet.DNS;
@@ -149,18 +151,17 @@ namespace ZeroconfServiceTests
         {
             var core = new Mock<IServiceCore>();
 
-            var info = new NetworkInfo();
+            List<IPAddress> addrs = new List<IPAddress>();
             if (!string.IsNullOrEmpty(ip6Address))
             {
-                info.Addresses = new IPAddress[2];
-                info.Addresses[1] = IPAddress.Parse(ip6Address);
+                addrs.Add(IPAddress.Parse(ip6Address));
             }
-            else
-            {
-                info.Addresses = new IPAddress[1];
-            }
-            info.Addresses[0] = IPAddress.Parse(ip4Address);
-            core.Setup(x => x.Network).Returns(info);
+            addrs.Add(IPAddress.Parse(ip4Address));
+            core.Setup(x => x.Addresses).Returns(addrs);
+
+            var nic = new Mock<NetworkInterface>();
+
+            core.Setup(x => x.Network).Returns(nic.Object);
             return core;
         }
 

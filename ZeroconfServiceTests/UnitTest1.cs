@@ -24,7 +24,7 @@ namespace ZeroconfServiceTests
 
             mockCore.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => requestPacket = x).Verifiable();
 
-            thing.WatchService(testServiceLookup, info => { });
+            thing.WatchService(testServiceLookup, (nic, info) => { });
 
             var ptr = requestPacket.Queries.Select(x => x.Record).Where(x => x.RecordType == 12).First();
             Assert.AreEqual(1, ptr.Class);
@@ -38,7 +38,7 @@ namespace ZeroconfServiceTests
             var thing = new ServiceWatchManager(mockCore.Object);
             ServiceInfo serviceInfo = null;
 
-            thing.WatchService("scooby.doo.local",  info => 
+            thing.WatchService("scooby.doo.local",  (net, info) => 
             {
                 serviceInfo = info;
             });

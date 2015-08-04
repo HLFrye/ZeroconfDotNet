@@ -136,18 +136,18 @@ namespace ZeroconfDotNet.DNS
             }
         }
 
-        public Network.NetworkInfo Network
+        public NetworkInterface Network
         {
-            get 
-            {
-                return new Network.NetworkInfo
-                {
-                    Name = _network.Name,
-                    Addresses = _network.GetIPProperties().UnicastAddresses.Select(x => x.Address).ToArray(),
-                };
-            }
+            get { return _network; }
         }
 
+        public IList<IPAddress> Addresses
+        {
+            get
+            {
+                return _network.GetIPProperties().UnicastAddresses.Select(x => x.Address).ToList();
+            }
+        }
 
         public bool Status
         {

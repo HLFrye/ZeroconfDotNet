@@ -97,7 +97,7 @@ namespace ZeroconfDotNet
 
         private bool IsMyAddress(IPAddress name)
         {
-            return _service.Network.Addresses.Any(x => x.Equals(name));
+            return _service.Network.GetIPProperties().UnicastAddresses.Select(x => x.Address).Contains(name);           
         }
 
         private void UpdateName()
@@ -150,12 +150,12 @@ namespace ZeroconfDotNet
 
         private IPAddress GetIP4Address()
         {
-            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+            return _service.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
         }
 
         private IPAddress GetIP6Address()
         {
-            return _service.Network.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).FirstOrDefault();
+            return _service.Addresses.Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6).FirstOrDefault();
         }
 
         private Packet BuildResponse(string name, UInt16 id, ServiceInfo info, IPAddress ip4Address, IPAddress ip6Address)

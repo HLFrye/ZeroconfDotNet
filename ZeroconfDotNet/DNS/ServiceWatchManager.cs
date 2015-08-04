@@ -18,10 +18,9 @@ namespace ZeroconfDotNet.DNS
         private readonly TTLDict<ServiceData> _serviceData = new TTLDict<ServiceData>();
         private readonly TTLDict<ServiceConnection> _serviceConnections = new TTLDict<ServiceConnection>();
         private readonly Dictionary<string, TTLList<ServicePointer>> _servicePointer = new Dictionary<string, TTLList<ServicePointer>>();
-        private readonly NetworkInterface _nic;
-        public ServiceWatchManager(IServiceCore core, NetworkInterface nic)
+
+        public ServiceWatchManager(IServiceCore core)
         {
-            _nic = nic;
             _service = core;
             _service.PacketReceived += _service_PacketReceived;
             _service.Start();
@@ -231,7 +230,7 @@ namespace ZeroconfDotNet.DNS
             {
                 _watched[serviceName] = new List<ServiceWatcher>();
             }
-            _watched[serviceName].Add(new ServiceWatcher(x => added(_nic, x));
+            _watched[serviceName].Add(new ServiceWatcher(x => added(_service.Network, x)));
 
             var repeater = new ServiceRequestRepeater(_service, serviceName, new Utils.TimerUtil());
 

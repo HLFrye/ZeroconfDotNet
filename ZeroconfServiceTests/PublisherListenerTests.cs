@@ -30,7 +30,7 @@ namespace ZeroconfServiceTests
                 var watcher = new ServiceWatchManager(service);
                 publisher.AddService("_pubtest._tcp.local", publishInfo);
                 publisher.Start();
-                watcher.WatchService("_pubtest._tcp.local", x => recvInfo = x);
+                watcher.WatchService("_pubtest._tcp.local", (nic, x) => recvInfo = x);
 
                 Assert.AreEqual(publishInfo.Name, recvInfo.Name);
                 Assert.AreEqual(publishInfo.Port, recvInfo.Port);

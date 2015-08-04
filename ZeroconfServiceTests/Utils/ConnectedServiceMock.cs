@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Net.NetworkInformation;
+
+using Moq;
 using ZeroconfDotNet.DNS;
 
 namespace ZeroconfServiceTests.Utils
@@ -11,8 +14,10 @@ namespace ZeroconfServiceTests.Utils
     {
         public ConnectedServiceMock(params string[] addresses)
         {
-            Network = new ZeroconfDotNet.DNS.Network.NetworkInfo();
-            Network.Addresses = addresses.Select(x => IPAddress.Parse(x)).ToArray();
+            var nic = new Mock<NetworkInterface>();
+            var addrs = addresses.Select(x => IPAddress.Parse(x)).ToList();
+            Network = nic.Object;
+            Addresses = addrs;
         }
 
         public event ZeroconfDotNet.DNS.Network.NetworkStatusChangedDelegate NetworkStatusChanged;
@@ -22,10 +27,16 @@ namespace ZeroconfServiceTests.Utils
             get { return true; }
         }
 
-        public ZeroconfDotNet.DNS.Network.NetworkInfo Network
+        public NetworkInterface Network
         {
             get;
-            set;
+            private set;
+        }
+
+        public IList<IPAddress> Addresses
+        {
+            get;
+            private set;
         }
 
         public void SendPacket(Packet p)

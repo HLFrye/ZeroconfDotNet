@@ -96,7 +96,7 @@ namespace ZeroconfDotNet
 
         internal ServiceWatcher(ServiceListener listener, string name, IServiceWatchManager manager)
         {
-            manager.WatchService(name, x => ServiceAdded(x));
+            manager.WatchService(name, (net, x) => ServiceAdded(x));
 
             _listener = listener;
             Name = name;

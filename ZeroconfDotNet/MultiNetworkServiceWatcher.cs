@@ -28,7 +28,7 @@ namespace ZeroconfDotNet
             foreach (var nic in ip4networks)
             {
                 var core = new ServiceCore(nic);
-                var watcher = new ServiceWatchManager(core, nic);
+                var watcher = new ServiceWatchManager(core);
                 _watchers.Add(watcher);
             }
         }
