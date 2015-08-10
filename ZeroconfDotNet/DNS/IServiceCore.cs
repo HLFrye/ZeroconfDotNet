@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using ZeroconfDotNet.DNS.Network;
 
 namespace ZeroconfDotNet.DNS
@@ -11,7 +13,9 @@ namespace ZeroconfDotNet.DNS
         bool Connected { get; }
 
         //Network info
-        NetworkInfo Network { get; }
+        //NetworkInfo Network { get; }
+        NetworkInterface Network { get; }
+        IList<IPAddress> Addresses { get; }
 
         //Packet Send/Receive
         void SendPacket(Packet p);

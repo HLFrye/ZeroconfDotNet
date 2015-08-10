@@ -19,12 +19,13 @@ namespace ZeroconfServiceTests
         {
             string testServiceLookup = "scooby.doo.local";
             var mockCore = new Mock<IServiceCore>();
+            mockCore.Setup(x => x.Connected).Returns(true);
             var thing = new ServiceWatchManager(mockCore.Object);
             Packet requestPacket = null; 
 
             mockCore.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => requestPacket = x).Verifiable();
 
-            thing.WatchService(testServiceLookup, info => { });
+            thing.WatchService(testServiceLookup, (nic, info) => { });
 
             var ptr = requestPacket.Queries.Select(x => x.Record).Where(x => x.RecordType == 12).First();
             Assert.AreEqual(1, ptr.Class);
@@ -38,7 +39,7 @@ namespace ZeroconfServiceTests
             var thing = new ServiceWatchManager(mockCore.Object);
             ServiceInfo serviceInfo = null;
 
-            thing.WatchService("scooby.doo.local",  info => 
+            thing.WatchService("scooby.doo.local",  (net, info) => 
             {
                 serviceInfo = info;
             });
@@ -58,7 +59,8 @@ namespace ZeroconfServiceTests
         public Packet BuildResponsePacket()
         {
             var response = new Packet();
-            response.IsQuery = false;
+            response.Flags.IsResponse = true;
+            response.Flags.IsAuthoritative = true;
             response.Answers.Add(new Answer()
             {
                 Record = new Record()

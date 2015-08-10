@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Net.NetworkInformation;
+
 using ZeroconfDotNet.DNS.Records;
 
 namespace ZeroconfDotNet.DNS
@@ -121,8 +123,7 @@ namespace ZeroconfDotNet.DNS
         {
             if (p == null)
             {
-                p = new Packet();
-                p.IsQuery = true;
+                p = new Packet();                
             }
             p.Queries.Add(new Query()
             {
@@ -222,13 +223,13 @@ namespace ZeroconfDotNet.DNS
             };
         }
 
-        public void WatchService(string serviceName, Action<ServiceInfo> added)
+        public void WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added)
         {
             if (!_watched.ContainsKey(serviceName))
             {
                 _watched[serviceName] = new List<ServiceWatcher>();
             }
-            _watched[serviceName].Add(new ServiceWatcher(added));
+            _watched[serviceName].Add(new ServiceWatcher(x => added(_service.Network, x)));
 
             var repeater = new ServiceRequestRepeater(_service, serviceName, new Utils.TimerUtil());
 
@@ -360,6 +361,26 @@ namespace ZeroconfDotNet.DNS
                 _seenServices.Add(svc.Name);
                 _action(svc);
             }
+        }
+
+        public void StopWatching(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

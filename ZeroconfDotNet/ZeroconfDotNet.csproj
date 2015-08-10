@@ -72,6 +72,9 @@
     <Compile Include="DNS\ServiceManager.cs" />
     <Compile Include="DNS\Structures.cs" />
     <Compile Include="IServiceListener.cs" />
+    <Compile Include="IServicePublisher.cs" />
+    <Compile Include="MultiNetworkServicePublisher.cs" />
+    <Compile Include="MultiNetworkServiceWatcher.cs" />
     <Compile Include="ServiceInfo.cs" />
     <Compile Include="ServiceListener.cs" />
     <Compile Include="ServicePublisher.cs" />

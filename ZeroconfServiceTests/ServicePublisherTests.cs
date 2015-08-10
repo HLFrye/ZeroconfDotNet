@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ZeroconfDotNet;
 using ZeroconfDotNet.DNS;
@@ -55,10 +57,7 @@ namespace ZeroconfServiceTests
                 service.LocalName = "Scooby";
                 service.Start();
 
-                var nameSearchPacket = new Packet()
-                {
-                    IsQuery = true,
-                };
+                var nameSearchPacket = new Packet();
                 nameSearchPacket.Queries.Add(new Query()
                 {
                     IsMulticast = true,
@@ -101,7 +100,8 @@ namespace ZeroconfServiceTests
                 service.Start();
                 core.Raise(x => x.PacketReceived += null, BuildQueryPacket("_pubtest._tcp.local"), new IPEndPoint(IPAddress.Parse("10.0.0.10"), 5353));
 
-                Assert.IsFalse(received.IsQuery);
+                Assert.IsTrue(received.Flags.IsResponse);
+                Assert.IsTrue(received.Flags.IsAuthoritative);
                 var ptrAnswer = received.Answers.Where(x => x.Record.RecordType == PTRAnswer.RecordType).First().Data as PTRAnswer;
                 Assert.AreEqual("Pubtest._pubtest._tcp.local", ptrAnswer.DomainName);
 
@@ -132,7 +132,6 @@ namespace ZeroconfServiceTests
         Packet BuildQueryPacket(string proto)
         {
             var packet = new Packet();
-            packet.IsQuery = true;
             packet.Queries.Add(new Query()
             {
                 IsMulticast = true,
@@ -149,18 +148,17 @@ namespace ZeroconfServiceTests
         {
             var core = new Mock<IServiceCore>();
 
-            var info = new NetworkInfo();
+            List<IPAddress> addrs = new List<IPAddress>();
             if (!string.IsNullOrEmpty(ip6Address))
             {
-                info.Addresses = new IPAddress[2];
-                info.Addresses[1] = IPAddress.Parse(ip6Address);
+                addrs.Add(IPAddress.Parse(ip6Address));
             }
-            else
-            {
-                info.Addresses = new IPAddress[1];
-            }
-            info.Addresses[0] = IPAddress.Parse(ip4Address);
-            core.Setup(x => x.Network).Returns(info);
+            addrs.Add(IPAddress.Parse(ip4Address));
+            core.Setup(x => x.Addresses).Returns(addrs);
+
+            var nic = new Mock<NetworkInterface>();
+
+            core.Setup(x => x.Network).Returns(nic.Object);
             return core;
         }
 
@@ -190,7 +188,8 @@ namespace ZeroconfServiceTests
         Packet BuildAnswerPacket(string name, string ip4, string ip6 = null)
         {
             var resp = new Packet();
-            resp.IsQuery = false;
+            resp.Flags.IsResponse = true;
+            resp.Flags.IsAuthoritative = true;
 
             if (!string.IsNullOrEmpty(ip4))
             {

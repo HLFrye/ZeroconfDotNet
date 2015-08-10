@@ -26,7 +26,10 @@ namespace ZeroconfDotNet.DNS
             _timer.Fired += _timer_Fired;
             _service.NetworkStatusChanged += _service_NetworkStatusChanged;
 
-            SendPacket(false);
+            if (service.Connected)
+            {
+                SendPacket(false);
+            }
         }
 
         void _service_NetworkStatusChanged(bool last, bool now)
@@ -38,6 +41,8 @@ namespace ZeroconfDotNet.DNS
             }
             else if (now == false)
             {
+                //TODO: Unit test and fix this, should set back to _false when reconnect...
+                //unless purposely stopped of course
                 _stopped = true;
             }
         }
@@ -54,7 +59,7 @@ namespace ZeroconfDotNet.DNS
 
             //Create Packet
             var packet = new Packet();
-            packet.IsQuery = true;
+            packet.Flags.IsResponse = false;
             packet.Queries.Add(new Query()
             {
                 IsMulticast = isMultiCast,
@@ -89,7 +94,7 @@ namespace ZeroconfDotNet.DNS
         static readonly int[] delays = new[] { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584 };
         void AdvanceDelay()
         {
-            nextDelayIndex = -~nextDelayIndex % delays.Length;
+            nextDelayIndex = (nextDelayIndex + 1) % delays.Length;
         }
 
         public void Dispose()
