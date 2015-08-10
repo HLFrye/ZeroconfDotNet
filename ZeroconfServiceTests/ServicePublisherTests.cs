@@ -57,10 +57,7 @@ namespace ZeroconfServiceTests
                 service.LocalName = "Scooby";
                 service.Start();
 
-                var nameSearchPacket = new Packet()
-                {
-                    IsQuery = true,
-                };
+                var nameSearchPacket = new Packet();
                 nameSearchPacket.Queries.Add(new Query()
                 {
                     IsMulticast = true,
@@ -103,7 +100,8 @@ namespace ZeroconfServiceTests
                 service.Start();
                 core.Raise(x => x.PacketReceived += null, BuildQueryPacket("_pubtest._tcp.local"), new IPEndPoint(IPAddress.Parse("10.0.0.10"), 5353));
 
-                Assert.IsFalse(received.IsQuery);
+                Assert.IsTrue(received.Flags.IsResponse);
+                Assert.IsTrue(received.Flags.IsAuthoritative);
                 var ptrAnswer = received.Answers.Where(x => x.Record.RecordType == PTRAnswer.RecordType).First().Data as PTRAnswer;
                 Assert.AreEqual("Pubtest._pubtest._tcp.local", ptrAnswer.DomainName);
 
@@ -134,7 +132,6 @@ namespace ZeroconfServiceTests
         Packet BuildQueryPacket(string proto)
         {
             var packet = new Packet();
-            packet.IsQuery = true;
             packet.Queries.Add(new Query()
             {
                 IsMulticast = true,
@@ -191,7 +188,8 @@ namespace ZeroconfServiceTests
         Packet BuildAnswerPacket(string name, string ip4, string ip6 = null)
         {
             var resp = new Packet();
-            resp.IsQuery = false;
+            resp.Flags.IsResponse = true;
+            resp.Flags.IsAuthoritative = true;
 
             if (!string.IsNullOrEmpty(ip4))
             {

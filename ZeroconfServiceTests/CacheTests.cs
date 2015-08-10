@@ -80,11 +80,14 @@ namespace ZeroconfServiceTests
                 });
             }
 
-            return new Packet
-            {
-                IsQuery = false,
+
+            var ret = new Packet
+            {                
                 Answers = Answers,
             };
+            ret.Flags.IsResponse = true;
+            ret.Flags.IsAuthoritative = true;
+            return ret;
         }
     }
 }

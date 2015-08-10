@@ -19,6 +19,7 @@ namespace ZeroconfServiceTests
         {
             string testServiceLookup = "scooby.doo.local";
             var mockCore = new Mock<IServiceCore>();
+            mockCore.Setup(x => x.Connected).Returns(true);
             var thing = new ServiceWatchManager(mockCore.Object);
             Packet requestPacket = null; 
 
@@ -58,7 +59,8 @@ namespace ZeroconfServiceTests
         public Packet BuildResponsePacket()
         {
             var response = new Packet();
-            response.IsQuery = false;
+            response.Flags.IsResponse = true;
+            response.Flags.IsAuthoritative = true;
             response.Answers.Add(new Answer()
             {
                 Record = new Record()

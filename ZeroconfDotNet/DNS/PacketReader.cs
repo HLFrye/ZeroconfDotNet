@@ -37,7 +37,7 @@ namespace ZeroconfDotNet.DNS
         public Packet Read()
         {
             var TransactionID = ByteOrder(reader.ReadUInt16());
-            var Flags = reader.ReadUInt16();
+            var Flags = ByteOrder(reader.ReadUInt16());
             var Questions = ByteOrder(reader.ReadUInt16());
             var AnswerRRs = ByteOrder(reader.ReadUInt16());
             var AuthorityRRs = ByteOrder(reader.ReadUInt16());

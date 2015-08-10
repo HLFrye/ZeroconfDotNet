@@ -34,7 +34,7 @@ namespace ZeroconfDotNet
 
         void _service_PacketReceived(Packet p, System.Net.IPEndPoint endPoint)
         {
- 	        if (p.IsQuery)
+ 	        if (!p.Flags.IsResponse)
             {
                 foreach (var query in p.Queries.Where(x => x.Record.Name == fullName))
                 {
@@ -43,7 +43,7 @@ namespace ZeroconfDotNet
 
                 foreach (var query in p.Queries.Where(x => x.Record.RecordType == PTRAnswer.RecordType))
                 {
-                    SendServiceResponses(query.Record.Name, p, !query.IsMulticast ? null : endPoint);
+                    SendServiceResponses(query.Record.Name, p, query.IsMulticast ? null : endPoint);
                 }
             }
             else
@@ -75,7 +75,8 @@ namespace ZeroconfDotNet
         {
             var packet = new Packet();
             packet.TransactionID = p.TransactionID;
-            packet.IsQuery = false;
+            packet.Flags.IsResponse = true;
+            packet.Flags.IsAuthoritative = true;
             var ip4Address = GetIP4Address();
             var ip6Address = GetIP6Address();
             var a = AAnswer.Build(fullName, ip4Address, (UInt16)120, true, 1);
@@ -97,7 +98,7 @@ namespace ZeroconfDotNet
 
         private bool IsMyAddress(IPAddress name)
         {
-            return _service.Network.GetIPProperties().UnicastAddresses.Select(x => x.Address).Contains(name);           
+            return _service.Addresses.Contains(name);
         }
 
         private void UpdateName()
@@ -121,7 +122,6 @@ namespace ZeroconfDotNet
         private void SendNameCheck()
         {
             var packet = new Packet();
-            packet.IsQuery = true;
             var query = new Query();
             query.IsMulticast = true;
             query.Record = new Record();
@@ -162,8 +162,8 @@ namespace ZeroconfDotNet
         {
             var ret = new Packet();
             ret.TransactionID = id;
-            ret.Flags = 0x8400;
-            ret.IsQuery = false;
+            ret.Flags.IsResponse = true;
+            ret.Flags.IsAuthoritative = true;
             var dnsName = name;
             var domainName = string.Join(".", info.Name, dnsName);
             var machineName = fullName;

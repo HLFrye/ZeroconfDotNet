@@ -123,8 +123,7 @@ namespace ZeroconfDotNet.DNS
         {
             if (p == null)
             {
-                p = new Packet();
-                p.IsQuery = true;
+                p = new Packet();                
             }
             p.Queries.Add(new Query()
             {

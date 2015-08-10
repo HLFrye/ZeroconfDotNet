@@ -81,7 +81,6 @@ namespace ZeroconfServerUI
             if (result.HasValue && result.Value)
             {
                 var packet = new Packet();
-                packet.IsQuery = true;
                 packet.Queries.Add(new Query()
                 {
                     IsMulticast = true,

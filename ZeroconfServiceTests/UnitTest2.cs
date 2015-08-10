@@ -25,13 +25,13 @@ namespace ZeroconfServiceTests
 
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
 
-            Assert.IsTrue(sentPacket.IsQuery);
+            Assert.IsFalse(sentPacket.Flags.IsResponse);
             Assert.AreEqual(12, sentPacket.Queries[0].Record.RecordType);
             Assert.AreEqual("_tcp.local", sentPacket.Queries[0].Record.Name);
             sentPacket = null;
 
             timerMock.Raise(x => x.Fired += null);
-            Assert.IsTrue(sentPacket.IsQuery);
+            Assert.IsFalse(sentPacket.Flags.IsResponse);
             Assert.AreEqual(12, sentPacket.Queries[0].Record.RecordType);
             Assert.AreEqual("_tcp.local", sentPacket.Queries[0].Record.Name);
         }

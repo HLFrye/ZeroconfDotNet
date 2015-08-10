@@ -26,7 +26,10 @@ namespace ZeroconfDotNet.DNS
             _timer.Fired += _timer_Fired;
             _service.NetworkStatusChanged += _service_NetworkStatusChanged;
 
-            SendPacket(false);
+            if (service.Connected)
+            {
+                SendPacket(false);
+            }
         }
 
         void _service_NetworkStatusChanged(bool last, bool now)
@@ -56,7 +59,7 @@ namespace ZeroconfDotNet.DNS
 
             //Create Packet
             var packet = new Packet();
-            packet.IsQuery = true;
+            packet.Flags.IsResponse = false;
             packet.Queries.Add(new Query()
             {
                 IsMulticast = isMultiCast,

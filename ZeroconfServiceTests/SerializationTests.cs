@@ -29,7 +29,7 @@ namespace ZeroconfServiceTests
 
             var packet = PacketReader.Read(reqBytes);
 
-            Assert.IsTrue(packet.IsQuery);
+            Assert.IsFalse(packet.Flags.IsResponse);
             Assert.AreEqual(packet.TransactionID, 0);
             Assert.AreEqual(packet.Questions, 1);
             Assert.AreEqual(packet.AnswerRRs, 0);
@@ -49,7 +49,8 @@ namespace ZeroconfServiceTests
             var packetBytes = ParseWiresharkString(packetHex);
             var packet = PacketReader.Read(packetBytes);
 
-            Assert.IsFalse(packet.IsQuery);
+            Assert.IsTrue(packet.Flags.IsResponse);
+            Assert.IsTrue(packet.Flags.IsAuthoritative);
             Assert.AreEqual(packet.TransactionID, 0);
             Assert.AreEqual(packet.Questions, 0);
             Assert.AreEqual(packet.AnswerRRs, 5);
