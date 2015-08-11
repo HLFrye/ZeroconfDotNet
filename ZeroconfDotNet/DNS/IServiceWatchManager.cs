@@ -9,9 +9,6 @@ namespace ZeroconfDotNet.DNS
 {
     public interface IServiceWatchManager : IDisposable
     {
-        void WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added);
-        void StopWatching(string serviceName);
-        void Start();
-        void Stop();        
+        ServiceWatcher WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added);
     }
 }

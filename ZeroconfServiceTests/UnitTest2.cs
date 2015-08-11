@@ -70,6 +70,45 @@ namespace ZeroconfServiceTests
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
 
             Assert.IsNull(sentPacket);
-        }       
+        }
+
+        [TestMethod]
+        public void TestNoSendAfterStop()
+        {
+            var serviceMock = new Mock<IServiceCore>();
+            var timerMock = new Mock<ITimer>();
+            serviceMock.Setup(x => x.Connected).Returns(true);
+
+            Packet sentPacket = null;
+            serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
+
+            var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
+
+            Assert.IsNotNull(sentPacket);
+            sentPacket = null;
+            sender.Stop(); // Need to add this
+            timerMock.Raise(x => x.Fired += null);
+            Assert.IsNull(sentPacket);
+        }
+
+        [TestMethod]
+        public void TestNoSendIfReconnectAfterStop()
+        {
+            var serviceMock = new Mock<IServiceCore>();
+            var timerMock = new Mock<ITimer>();
+            serviceMock.Setup(x => x.Connected).Returns(true);
+
+            Packet sentPacket = null;
+            serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
+
+            var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
+
+            Assert.IsNotNull(sentPacket);
+            sentPacket = null;
+            sender.Stop();
+            serviceMock.Raise(x => x.NetworkStatusChanged += null, false, true);
+            timerMock.Raise(x => x.Fired += null);
+            Assert.IsNull(sentPacket);
+        }
     }
 }

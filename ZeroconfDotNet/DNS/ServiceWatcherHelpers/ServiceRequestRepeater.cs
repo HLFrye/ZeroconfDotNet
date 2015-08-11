@@ -14,6 +14,7 @@ namespace ZeroconfDotNet.DNS
         private readonly IServiceCore _service;
         private readonly ITimer _timer;
         private readonly string _proto;
+        protected bool _waiting;
         protected bool _stopped;
 
         public ServiceRequestRepeater(IServiceCore service, string protocol, ITimer timer)
@@ -21,7 +22,7 @@ namespace ZeroconfDotNet.DNS
             _service = service;
             _timer = timer;
             _proto = protocol;
-            _stopped = false;
+            _waiting = false;
 
             _timer.Fired += _timer_Fired;
             _service.NetworkStatusChanged += _service_NetworkStatusChanged;
@@ -30,6 +31,27 @@ namespace ZeroconfDotNet.DNS
             {
                 SendPacket(false);
             }
+            else
+            {
+                _waiting = true;
+            }
+        }
+
+        public void Restart()
+        {
+            if (_stopped)
+            {
+                _stopped = false;
+                if (!_waiting)
+                {
+                    SendPacket(false);
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            _stopped = true;
         }
 
         void _service_NetworkStatusChanged(bool last, bool now)
@@ -41,9 +63,7 @@ namespace ZeroconfDotNet.DNS
             }
             else if (now == false)
             {
-                //TODO: Unit test and fix this, should set back to _false when reconnect...
-                //unless purposely stopped of course
-                _stopped = true;
+                _waiting = true;
             }
         }
 
@@ -54,7 +74,7 @@ namespace ZeroconfDotNet.DNS
 
         void SendPacket(bool isMultiCast)
         {
-            if (_stopped)
+            if (_waiting || _stopped)
                 return;
 
             //Create Packet

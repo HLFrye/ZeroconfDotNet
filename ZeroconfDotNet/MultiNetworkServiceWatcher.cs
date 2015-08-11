@@ -33,24 +33,11 @@ namespace ZeroconfDotNet
             }
         }
 
-        public void WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added)
+        public ServiceWatcher WatchService(string serviceName, Action<NetworkInterface, ServiceInfo> added)
         {
+            //Todo: Create aggregate ServiceWatcher
             DoForAll(x => x.WatchService(serviceName, added));
-        }
-
-        public void StopWatching(string serviceName)
-        {
-            DoForAll(x => x.StopWatching(serviceName));
-        }
-
-        public void Start()
-        {
-            DoForAll(x => x.Start());
-        }
-
-        public void Stop()
-        {
-            DoForAll(x => x.Stop());
+            return null;
         }
 
         public void Dispose()
