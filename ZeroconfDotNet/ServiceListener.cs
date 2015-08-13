@@ -9,7 +9,7 @@ using System.Net.NetworkInformation;
 //TODO
 //Lots to do in this file
 //I think I'm still using it... need to make sure of public API
-
+/*
 namespace ZeroconfDotNet
 {
     public delegate void ServiceChanged(ServiceInfo service);
@@ -122,3 +122,4 @@ namespace ZeroconfDotNet
         }
     }
 }
+*/

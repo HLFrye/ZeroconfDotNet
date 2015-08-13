@@ -40,17 +40,29 @@ namespace ZeroconfDotNet
             }
         }
 
-        public IServiceWatchManager CreateWatcher()
+        private IServiceWatchManager _watchManager;
+        private readonly object _watchLock = new object();
+        public ServiceWatcher FindService(string serviceName, Action<NetworkInterface, ServiceInfo> callback)
         {
-            if (_nic == null)
+            if (_watchManager == null)
             {
-                return new MultiNetworkServiceWatcher();
+                lock (_watchLock)
+                {
+                    if (_watchManager == null)
+                    {
+                        if (_nic == null)
+                        {
+                            _watchManager = new MultiNetworkServiceWatcher();
+                        }
+                        else
+                        {
+                            var core = new ServiceCore(_nic);
+                            _watchManager = new ServiceWatchManager(core);
+                        }
+                    }
+                }
             }
-            else
-            {
-                var core = new ServiceCore(_nic);
-                return new ServiceWatchManager(core);
-            }
+            return _watchManager.WatchService(serviceName, callback);
         }
     }
 }
