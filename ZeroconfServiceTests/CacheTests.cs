@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.Utils;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.Utils;
 using Moq;
 
 namespace ZeroconfServiceTests
@@ -20,7 +20,7 @@ namespace ZeroconfServiceTests
             var ttl = 1;    
 
             var timer = new Mock<ITimer>();
-            var serviceCache = (IServiceCache)null;
+            var serviceCache = new ServiceCache(timer.Object);
             var packet = CreatePacket(new[] { new Tuple<string, int, int>(name, recordType, ttl) });
             var verified = false;
             serviceCache.AddPacket(packet);
@@ -31,6 +31,7 @@ namespace ZeroconfServiceTests
                     Assert.AreEqual(x[0].Item2, recordType);
                     verified = true;
                 };
+            Thread.Sleep(1000);
             timer.Raise(x => x.Fired += null);
             Assert.IsTrue(verified);
         }
@@ -43,15 +44,17 @@ namespace ZeroconfServiceTests
             var ttl = 1;
             
             var timer = new Mock<ITimer>();
-            var serviceCache = (IServiceCache)null;
+            var serviceCache = new ServiceCache(timer.Object);
             var packet = CreatePacket(new[] { new Tuple<string, int, int>(name, recordType, ttl) });
             var verified = true;
             serviceCache.AddPacket(packet);
 
             serviceCache.RequestUpdate += (x) =>
             {
-                verified = false;
+                if (x.Length != 0)
+                    verified = false;
             };
+            Thread.Sleep(1000);
 
             var packet2 = CreatePacket(new[] { new Tuple<string, int, int>(name, recordType, ttl * 10) });
             serviceCache.AddPacket(packet2);
@@ -77,11 +80,14 @@ namespace ZeroconfServiceTests
                 });
             }
 
-            return new Packet
-            {
-                IsQuery = false,
+
+            var ret = new Packet
+            {                
                 Answers = Answers,
             };
+            ret.Flags.IsResponse = true;
+            ret.Flags.IsAuthoritative = true;
+            return ret;
         }
     }
 }

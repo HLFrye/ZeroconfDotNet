@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
     public class ServiceInfo: IEqualityComparer<ServiceInfo>
     {
@@ -15,12 +15,14 @@ namespace ZeroconfDotNet
             Data = new Dictionary<string, string>();
         }
 
-        public IPEndPoint EndPoint { get; set; }
+        public IPAddress IP4Address { get; set; }
+        public IPAddress IP6Address { get; set; }
 
         public UInt16 Port
         { get; set;}
 
         public string Name { get; set; }
+        public string Protocol { get; set; }
         private int? _textVers = 1;
         public int? TextVers
         {
@@ -35,8 +37,8 @@ namespace ZeroconfDotNet
             }
         }
 
-        public Dictionary<string, string> Data { get; set; }
-        public List<string> Flags { get; set; }
+        public IDictionary<string, string> Data { get; set; }
+        public IList<string> Flags { get; set; }
         public int Priority { get; set; }
         public int Weight { get; set; }
 

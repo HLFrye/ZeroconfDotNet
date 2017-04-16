@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace ZeroconfDotNet.DNS.Records
+namespace DiscoveryDotNet.DNS.Records
 {
     public class AAnswer : AnswerData
     {
@@ -29,6 +29,9 @@ namespace ZeroconfDotNet.DNS.Records
 
         public static Answer Build(string name, IPAddress address, int TTL, bool flushCache, UInt16 cls)
         {
+            if (address == null)
+                return null;
+
             if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
                 throw new ArgumentException("Address must be an ipv4 address");
 

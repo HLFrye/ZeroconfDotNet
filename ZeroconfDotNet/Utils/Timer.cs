@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
-namespace ZeroconfDotNet.Utils
+namespace DiscoveryDotNet.Utils
 {
-    class Timer : ITimer
+    class TimerUtil : ITimer
     {
-        public event Action Fired;
+        private readonly Timer _timer;
+
+        public TimerUtil()
+        {
+            _timer = new Timer(x => Fired());
+        }
+
+        public event Action Fired = delegate { };
+
+        public void FireNext(int seconds)
+        {
+            _timer.Change(seconds, System.Threading.Timeout.Infinite);
+        }
     }
 }

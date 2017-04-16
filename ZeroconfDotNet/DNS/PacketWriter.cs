@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class PacketWriter : IDisposable
     {
@@ -32,7 +32,7 @@ namespace ZeroconfDotNet.DNS
         public void WritePacket(Packet packet)
         {
             writer.Write(ByteOrder(packet.TransactionID));
-            writer.Write(ByteOrder(packet.Flags));
+            writer.Write(ByteOrder(packet.Flags.StoreFlags()));
             writer.Write(ByteOrder(packet.Questions));
             writer.Write(ByteOrder(packet.AnswerRRs));
             writer.Write(ByteOrder(packet.AuthorityRRs));

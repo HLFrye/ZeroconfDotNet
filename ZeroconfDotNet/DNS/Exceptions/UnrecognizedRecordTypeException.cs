@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ZeroconfDotNet.DNS.Exceptions
+namespace DiscoveryDotNet.DNS.Exceptions
 {
     class UnrecognizedRecordTypeException : Exception
     {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Records;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public abstract class Service
     {
@@ -43,7 +43,7 @@ namespace ZeroconfDotNet.DNS
         {
             var ret = new Packet();
             ret.TransactionID = id;
-            ret.Flags = 0;
+            ret.Flags.IsResponse = false;
             ret.Queries = new Query[] 
             {
                 new Query() 
@@ -58,7 +58,8 @@ namespace ZeroconfDotNet.DNS
         {
             var ret = new Packet();
             ret.TransactionID = id;
-            ret.Flags = 0x8400;
+            ret.Flags.IsResponse = true;
+            ret.Flags.IsAuthoritative = true;
             var dnsName = name;
             var domainName = string.Join(".", info.Name, dnsName);
             var machineName = MachineName;

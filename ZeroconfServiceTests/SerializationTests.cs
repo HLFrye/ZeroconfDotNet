@@ -2,9 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Net;
-using ZeroconfDotNet;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.DNS.Records;
 
 namespace ZeroconfServiceTests
 {
@@ -26,10 +26,10 @@ namespace ZeroconfServiceTests
         {
             var reqHex = "000000000001000000000000085f70756274657374045f746370056c6f63616c00000c0001";
             var reqBytes = ParseWiresharkString(reqHex);
+            var reader = new PacketReader();
+            var packet = reader.Read(reqBytes);
 
-            var packet = PacketReader.Read(reqBytes);
-
-            Assert.IsTrue(packet.IsQuery);
+            Assert.IsFalse(packet.Flags.IsResponse);
             Assert.AreEqual(packet.TransactionID, 0);
             Assert.AreEqual(packet.Questions, 1);
             Assert.AreEqual(packet.AnswerRRs, 0);
@@ -47,9 +47,11 @@ namespace ZeroconfServiceTests
         {
             var packetHex = "000084000000000500000000085f70756274657374045f746370056c6f63616c00000c000100001194000a0750756274657374c00cc02b0010800100001194000100c02b0021800100000078000f00000000270f067562756e7475c01ac054001c8001000000780010fe80000000000000020c29fffe0de789c05400018001000000780004c0a81080";
             var packetBytes = ParseWiresharkString(packetHex);
-            var packet = PacketReader.Read(packetBytes);
-
-            Assert.IsFalse(packet.IsQuery);
+            var reader = new PacketReader();
+            var packet = reader.Read(packetBytes
+                );
+            Assert.IsTrue(packet.Flags.IsResponse);
+            Assert.IsTrue(packet.Flags.IsAuthoritative);
             Assert.AreEqual(packet.TransactionID, 0);
             Assert.AreEqual(packet.Questions, 0);
             Assert.AreEqual(packet.AnswerRRs, 5);

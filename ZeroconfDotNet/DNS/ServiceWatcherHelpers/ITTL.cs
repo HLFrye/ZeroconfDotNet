@@ -5,7 +5,11 @@ using System.Text;
 
 namespace DiscoveryDotNet.DNS
 {
-    public class Authority
+    public partial class ServiceWatchManager
     {
+        interface ITTL
+        {
+            DateTime ExpireAt { get; }
+        }
     }
 }

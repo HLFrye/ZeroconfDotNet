@@ -2,13 +2,84 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DiscoveryDotNet.DNS.Structures;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
+    public class Flags
+    {
+        public bool IsResponse;
+        private uint _opCode;
+        public uint OpCode 
+        {
+            get
+            {
+                return _opCode;
+            }
+            set
+            {
+                if (value > 0x0F)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                _opCode = value;
+            }
+        }
+        public bool IsAuthoritative;
+        public bool IsTruncated;
+        public bool IsRecursionDesired;
+        public bool IsRecursionAvailable;
+        public bool IsAuthenticated;
+        private uint _replyCode;
+        public uint ReplyCode 
+        {
+            get { return _replyCode; }
+            set
+            {
+                if (value > 0x0F)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                _replyCode = value;
+            }
+        }
+        public bool AcceptUnauthenticatedData;
+
+        internal UInt16 StoreFlags()
+        {
+            UInt16 output = 0;
+            output |= (UInt16) (IsResponse ? 0x8000 : 0);
+            output |= (UInt16) (OpCode << 12);
+            output |= (UInt16)(IsAuthoritative ? 0x0400 : 0);
+            output |= (UInt16)(IsTruncated ? 0x0200 : 0);
+            output |= (UInt16)(IsRecursionDesired ? 0x0100 : 0);
+            output |= (UInt16)(IsRecursionAvailable ? 0x0080 : 0);
+            output |= (UInt16)(IsAuthenticated ? 0x0020 : 0);
+            output |= (UInt16)(AcceptUnauthenticatedData ? 0x0010 : 0);
+            output |= (UInt16)ReplyCode;
+            return output;
+        }
+
+        internal void ReadFlags(UInt16 rawFlags)
+        {
+            IsResponse = (rawFlags & 0x8000) != 0;
+            OpCode = (uint)(rawFlags & 0x7800) >> 12;
+            IsAuthoritative = (rawFlags & 0x0400) != 0;
+            IsTruncated = (rawFlags & 0x0200) != 0;
+            IsRecursionDesired = (rawFlags & 0x0100) != 0;
+            IsRecursionAvailable = (rawFlags & 0x0080) != 0;
+            IsAuthenticated = (rawFlags & 0x0020) != 0;
+            AcceptUnauthenticatedData = (rawFlags & 0x0010) != 0;
+            ReplyCode = (uint)rawFlags & 0x000F;
+        }
+    }
+
+
     public class Packet
     {
         public UInt16 TransactionID { get; set; }
-        public UInt16 Flags { get; set; }
+        private readonly Flags _flags = new Flags();
+        public Flags Flags { get { return _flags; } }
         public UInt16 Questions { get { return (UInt16)Queries.Count; } }
         public UInt16 AnswerRRs { get { return (UInt16)Answers.Count; } }
         public UInt16 AuthorityRRs { get { return (UInt16)Authority.Count; } }
@@ -17,19 +88,6 @@ namespace ZeroconfDotNet.DNS
         public IList<Answer> Answers { get; set; }
         public IList<Authority> Authority { get; set; }
         public IList<Additional> Additional { get; set; }
-
-        public bool IsQuery
-        {
-            get
-            {
-                return (Flags & 0x80) == 0;
-            }
-            set
-            {
-                Flags = (UInt16)((Flags & 0x7f) | (value ? 0x80 : 0x00));
-            }
-
-        }
 
         public void Add(Query query)
         {
@@ -40,17 +98,16 @@ namespace ZeroconfDotNet.DNS
         {
             var rnd = new Random();
             TransactionID = (UInt16)rnd.Next();
-            Flags = 0;
             Queries = new List<Query>();
             Answers = new List<Answer>();
             Authority = new List<Authority>();
             Additional = new List<Additional>();
         }
 
-        public Packet(UInt16 transactionId, UInt16 flags, Query[] queries, Answer[] answers, Authority[] auth, Additional[] addl)
+        public Packet(Header header, Query[] queries, Answer[] answers, Authority[] auth, Additional[] addl)
         {
-            TransactionID = transactionId;
-            Flags = flags;
+            TransactionID = header.TransactionID;
+            Flags.ReadFlags(header.Flags);
             Queries = new List<Query>(queries);
             Answers = new List<Answer>(answers);
             Authority = new List<Authority>(auth);
