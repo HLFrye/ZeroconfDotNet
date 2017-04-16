@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Records;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public abstract class Service
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class PacketWriter : IDisposable
     {

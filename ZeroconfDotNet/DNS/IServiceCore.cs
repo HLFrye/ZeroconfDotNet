@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
-using ZeroconfDotNet.DNS.Network;
+using DiscoveryDotNet.DNS.Network;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public interface IServiceCore
     {
@@ -21,6 +21,7 @@ namespace ZeroconfDotNet.DNS
         void SendPacket(Packet p);
         void SendPacket(Packet p, IPEndPoint ep);
         event PacketReceivedDelegate PacketReceived;
+        event MalformedPacketReceivedDelegate MalformedPacketReceived;
         
         //Start the service 
         //TODO: Am I sure this is necessary?

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public delegate void RequestUpdateDelegate(Tuple<string, int>[] updates);
     public interface IServiceCache

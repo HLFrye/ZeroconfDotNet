@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Threading;
-using ZeroconfDotNet.Utils;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet.Utils;
+using DiscoveryDotNet.DNS.Records;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     delegate void RecordUpdated(string name, IEnumerable<Answer> answers);
 

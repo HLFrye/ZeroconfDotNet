@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.DNS.Network;
-using ZeroconfDotNet.Utils;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.DNS.Network;
+using DiscoveryDotNet.Utils;
 using Moq;
 
 namespace ZeroconfServiceTests
@@ -24,6 +24,7 @@ namespace ZeroconfServiceTests
             serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
 
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
+            sender.Start();
 
             Assert.IsFalse(sentPacket.Flags.IsResponse);
             Assert.AreEqual(12, sentPacket.Queries[0].Record.RecordType);
@@ -47,6 +48,7 @@ namespace ZeroconfServiceTests
             serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
 
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
+            sender.Start();
             sentPacket = null;
             serviceMock.Raise(x => x.NetworkStatusChanged += null, false, true);
 
@@ -83,7 +85,7 @@ namespace ZeroconfServiceTests
             serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
 
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
-
+            sender.Start();
             Assert.IsNotNull(sentPacket);
             sentPacket = null;
             sender.Stop(); // Need to add this
@@ -102,7 +104,7 @@ namespace ZeroconfServiceTests
             serviceMock.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => sentPacket = x);
 
             var sender = new ServiceRequestRepeater(serviceMock.Object, "_tcp.local", timerMock.Object);
-
+            sender.Start();
             Assert.IsNotNull(sentPacket);
             sentPacket = null;
             sender.Stop();

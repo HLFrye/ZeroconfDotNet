@@ -4,30 +4,50 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Structures;
+using DiscoveryDotNet.DNS.Exceptions;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class PacketReader
     {
-        NameExpander expander;
-        BinaryReader reader;
-
-        public PacketReader(BinaryReader reader)
+        public enum PacketSectionEnum
         {
-            expander = new NameExpander();
-            this.reader = reader;
+            NotStarted,
+            Header,
+            Questions,
+            Answers,
+            Authority,
+            Additional
         }
 
-        public static Packet Read(byte[] data)
+        private readonly NameExpander expander;
+        private BinaryReader reader;
+
+        public PacketReader()
+        {
+            expander = new NameExpander();
+        }
+
+        public Packet Read(byte[] data)
         {
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
             {
-                var packetReader = new PacketReader(reader);
-                return packetReader.Read();
+                try
+                {
+                    this.reader = reader;
+                    return Read();
+                }
+                finally
+                {
+                    this.reader = null;
+                }
             }
         }
+
+        public PacketSectionEnum CurrentSection { get; private set; }
 
         public byte[] ReadBytes(int len)
         {
@@ -36,20 +56,35 @@ namespace ZeroconfDotNet.DNS
 
         public Packet Read()
         {
-            var TransactionID = ByteOrder(reader.ReadUInt16());
-            var Flags = ByteOrder(reader.ReadUInt16());
-            var Questions = ByteOrder(reader.ReadUInt16());
-            var AnswerRRs = ByteOrder(reader.ReadUInt16());
-            var AuthorityRRs = ByteOrder(reader.ReadUInt16());
-            var AdditionalRRs = ByteOrder(reader.ReadUInt16());
+            CurrentSection = PacketSectionEnum.Header;
+            var Header = ReadHeader();
 
-            var Queries = ReadQueries(Questions);
-            var Answers = ReadAnswers(AnswerRRs);
-            var Authority = ReadAuthority(AuthorityRRs);
-            var Additional = ReadAdditional(AdditionalRRs);
-            return new Packet(TransactionID, Flags, Queries, Answers, Authority, Additional);
+            CurrentSection = PacketSectionEnum.Questions;
+            var Queries = ReadQueries(Header.Questions);
+
+            CurrentSection = PacketSectionEnum.Answers;
+            var Answers = ReadAnswers(Header.AnswerRRs);
+
+            CurrentSection = PacketSectionEnum.Authority;
+            var Authority = ReadAuthority(Header.AuthorityRRs);
+
+            CurrentSection = PacketSectionEnum.Additional;
+            var Additional = ReadAdditional(Header.AdditionalRRs);
+            return new Packet(Header, Queries, Answers, Authority, Additional);
         }
 
+        Header ReadHeader()
+        {            
+            return new Header
+            {
+                TransactionID = ByteOrder(reader.ReadUInt16()),
+                Flags = ByteOrder(reader.ReadUInt16()),
+                Questions = ByteOrder(reader.ReadUInt16()),
+                AnswerRRs = ByteOrder(reader.ReadUInt16()),
+                AuthorityRRs = ByteOrder(reader.ReadUInt16()),
+                AdditionalRRs = ByteOrder(reader.ReadUInt16()),
+            };            
+        }
 
         Query[] ReadQueries(uint count)
         {
@@ -191,24 +226,15 @@ namespace ZeroconfDotNet.DNS
                 return ReadStrings[offset];
             }
         }
+
         public static UInt16 ByteOrder(UInt16 input)
         {
-            if (BitConverter.IsLittleEndian)
-            {
-                return (UInt16)(((input & 0xFF00) >> 8) | ((input & 0x00FF) << 8));
-            }
-            return input;
+            return (UInt16)IPAddress.NetworkToHostOrder((short)input);
         }
 
         public static UInt32 ByteOrder(UInt32 input)
         {
-            if (BitConverter.IsLittleEndian)
-            {
-                return (UInt32)(((input & 0xFF000000) >> 24) | ((input & 0x00FF0000) >> 8) | ((input & 0x0000FF00) << 8) | ((input & 0x000000FF) << 24));
-            }
-            return input;
+            return (UInt32)IPAddress.NetworkToHostOrder((int)input);
         }
-
-
     }
 }

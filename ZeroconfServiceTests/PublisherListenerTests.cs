@@ -2,8 +2,8 @@
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using ZeroconfDotNet;
-using ZeroconfDotNet.DNS;
+using DiscoveryDotNet;
+using DiscoveryDotNet.DNS;
 using ZeroconfServiceTests.Utils;
 
 namespace ZeroconfServiceTests
@@ -30,8 +30,8 @@ namespace ZeroconfServiceTests
                 var watcher = new ServiceWatchManager(service);
                 publisher.AddService("_pubtest._tcp.local", publishInfo);
                 publisher.Start();
-                watcher.WatchService("_pubtest._tcp.local", (nic, x) => recvInfo = x);
-
+                var watch = watcher.WatchService("_pubtest._tcp.local", (nic, x) => recvInfo = x);
+                watch.Start();
                 Assert.AreEqual(publishInfo.Name, recvInfo.Name);
                 Assert.AreEqual(publishInfo.Port, recvInfo.Port);
                 Assert.AreEqual(publishInfo.Priority, recvInfo.Priority);

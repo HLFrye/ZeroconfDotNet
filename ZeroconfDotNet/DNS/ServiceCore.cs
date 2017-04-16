@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -7,11 +8,28 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 
-namespace ZeroconfDotNet.DNS
+using DiscoveryDotNet.DNS.Exceptions;
+
+namespace DiscoveryDotNet.DNS
 {
     public delegate void PacketReceivedDelegate(Packet p, IPEndPoint endPoint);
 
-    public partial class ServiceCore : ZeroconfDotNet.DNS.IServiceCore
+    public class ProcessingFailure
+    {
+        public enum FailureReason
+        {
+            Unknown,
+            InvalidString,
+            UnexpectedEndOfData,
+        }
+
+        public FailureReason Reason;
+        public long Position;
+    }
+
+    public delegate void MalformedPacketReceivedDelegate(byte[] data, ProcessingFailure reason, IPEndPoint endPoint);
+
+    public partial class ServiceCore : DiscoveryDotNet.DNS.IServiceCore
     {
         private readonly NetworkInterface _network;
         private bool _connected;
@@ -101,29 +119,51 @@ namespace ZeroconfDotNet.DNS
             byte[] received = Client.EndReceive(res, ref RemoteIpEndPoint);
 
             Packet packet = null;
+            var reader = new PacketReader();
             try
             {
-                packet = PacketReader.Read(received);
+                packet = reader.Read(received);
+                if (packet != null)
+                {
+                    try
+                    {
+                        PacketReceived(packet, RemoteIpEndPoint);
+                    }
+                    catch (Exception)
+                    {
+                        //Event handlers shouldn't throw this far up, but
+                        //we should continue producing packets if they do.
+                    }
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Any exception and we got a malformed packet
-            }
+                ProcessingFailure.FailureReason reason;
+                if (ex is EndOfStreamException)
+                {
+                    reason = ProcessingFailure.FailureReason.UnexpectedEndOfData;
+                }
+                else if (ex is KeyNotFoundException)
+                {
+                    reason = ProcessingFailure.FailureReason.InvalidString;
+                }
+                else
+                {
+                    reason = ProcessingFailure.FailureReason.Unknown;
+                }
+                
+                var failure = new ProcessingFailure
+                {
+                    Position = reader.StreamPosition,
+                    Reason = reason,
+                };
 
-            if (packet != null)
-            {
-                try
-                {
-                    PacketReceived(packet, RemoteIpEndPoint);
-                }
-                catch (Exception)
-                {
-                    //Event handlers shouldn't throw this far up, but
-                    //we should continue producing packets if they do.
-                }
+                MalformedPacketReceived(received, failure, RemoteIpEndPoint);
             }
-            
-            Client.BeginReceive(new AsyncCallback(Receive), null);
+            finally
+            {
+                Client.BeginReceive(new AsyncCallback(Receive), null);
+            }
         }
 
         public event Network.NetworkStatusChangedDelegate NetworkStatusChanged;
@@ -169,5 +209,8 @@ namespace ZeroconfDotNet.DNS
             var data = PacketWriter.Write(p);
             Client.Send(data, data.Length, ep);
         }
+
+
+        public event MalformedPacketReceivedDelegate MalformedPacketReceived = delegate { };
     }
 }

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Net;
 using System.Text.RegularExpressions;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.DNS.Records;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
     public delegate ServiceInfo ServiceCallback();
 
@@ -16,7 +16,7 @@ namespace ZeroconfDotNet
     /// Main entry point.  Manages a mDNS listener that will respond
     /// to queries with any services registered to this publisher
     /// </summary>
-    public class ServicePublisher : IDisposable, ZeroconfDotNet.IServicePublisher
+    public class ServicePublisher : IDisposable, DiscoveryDotNet.IServicePublisher
     {
         private readonly IServiceCore _service;
         private ILookup<string, ServiceCallback> _lookup;

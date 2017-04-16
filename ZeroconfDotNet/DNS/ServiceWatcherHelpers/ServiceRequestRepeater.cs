@@ -5,9 +5,9 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-using ZeroconfDotNet.Utils;
+using DiscoveryDotNet.Utils;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class ServiceRequestRepeater : IDisposable
     {
@@ -16,33 +16,26 @@ namespace ZeroconfDotNet.DNS
         private readonly string _proto;
         protected bool _waiting;
         protected bool _stopped;
+        protected bool _timerRunning;
 
         public ServiceRequestRepeater(IServiceCore service, string protocol, ITimer timer)
         {
             _service = service;
             _timer = timer;
             _proto = protocol;
-            _waiting = false;
+            _waiting = !_service.Connected;
 
             _timer.Fired += _timer_Fired;
             _service.NetworkStatusChanged += _service_NetworkStatusChanged;
-
-            if (service.Connected)
-            {
-                SendPacket(false);
-            }
-            else
-            {
-                _waiting = true;
-            }
+            _waiting = true;
         }
 
-        public void Restart()
+        public void Start()
         {
-            if (_stopped)
+            if (_waiting)
             {
-                _stopped = false;
-                if (!_waiting)
+                _waiting = false;
+                if (!_stopped)
                 {
                     SendPacket(false);
                 }
@@ -51,7 +44,7 @@ namespace ZeroconfDotNet.DNS
 
         public void Stop()
         {
-            _stopped = true;
+            _waiting = true;
         }
 
         void _service_NetworkStatusChanged(bool last, bool now)
@@ -75,7 +68,10 @@ namespace ZeroconfDotNet.DNS
         void SendPacket(bool isMultiCast)
         {
             if (_waiting || _stopped)
+            {
+                _timerRunning = false;
                 return;
+            }
 
             //Create Packet
             var packet = new Packet();
@@ -103,6 +99,7 @@ namespace ZeroconfDotNet.DNS
             finally
             {
                 //Setup next request
+                _timerRunning = true;
                 _timer.FireNext(delays[nextDelayIndex]);
                 AdvanceDelay();
             }

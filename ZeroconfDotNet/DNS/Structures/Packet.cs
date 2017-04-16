@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DiscoveryDotNet.DNS.Structures;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class Flags
     {
@@ -103,10 +104,10 @@ namespace ZeroconfDotNet.DNS
             Additional = new List<Additional>();
         }
 
-        public Packet(UInt16 transactionId, UInt16 flags, Query[] queries, Answer[] answers, Authority[] auth, Additional[] addl)
+        public Packet(Header header, Query[] queries, Answer[] answers, Authority[] auth, Additional[] addl)
         {
-            TransactionID = transactionId;
-            Flags.ReadFlags(flags);
+            TransactionID = header.TransactionID;
+            Flags.ReadFlags(header.Flags);
             Queries = new List<Query>(queries);
             Answers = new List<Answer>(answers);
             Authority = new List<Authority>(auth);

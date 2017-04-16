@@ -4,25 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
-using ZeroconfDotNet.DNS;
+using System.Threading;
+using DiscoveryDotNet.DNS;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
-    class Factory
+    public class Service
     {
-        public static Factory AllNetworks = new Factory();
-        public static Factory ForNetwork(NetworkInterface nic)
+        public static Service AllNetworks = new Service();
+        public static Service ForNetwork(NetworkInterface nic)
         {
-            return new Factory(nic);
+            return new Service(nic);
         }
 
         private NetworkInterface _nic = null;
 
-        private Factory()
+        private Service()
         {
         }
 
-        private Factory(NetworkInterface nic)
+        private Service(NetworkInterface nic)
         {
             _nic = nic;
         }
@@ -40,8 +41,21 @@ namespace ZeroconfDotNet
             }
         }
 
+        public IServiceCore GetMDNSService()
+        {
+            if (_nic == null)
+            {
+                return new MultiNetworkServiceCore();
+            }
+            else
+            {
+                return new ServiceCore(_nic);
+            }
+        }
+
         private IServiceWatchManager _watchManager;
         private readonly object _watchLock = new object();
+       
         public ServiceWatcher FindService(string serviceName, Action<NetworkInterface, ServiceInfo> callback)
         {
             if (_watchManager == null)

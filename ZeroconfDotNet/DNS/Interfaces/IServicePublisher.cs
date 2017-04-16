@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
-    interface IServicePublisher
+    public interface IServicePublisher
     {        
         void AddService(string host, ServiceCallback callback);
         void AddService(string host, ServiceInfo service);

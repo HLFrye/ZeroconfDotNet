@@ -7,7 +7,7 @@
     <ProjectGuid>{5C1F003B-65E0-4933-A93A-CD552D64AC93}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ZeroconfDotNet</RootNamespace>
+    <RootNamespace>DiscoveryDotNet</RootNamespace>
     <AssemblyName>ZeroconfDotNet</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -58,6 +58,7 @@
     <Compile Include="DNS\Structures\Authority.cs" />
     <Compile Include="DNS\Exceptions\RecordLengthException.cs" />
     <Compile Include="DNS\Exceptions\UnrecognizedRecordTypeException.cs" />
+    <Compile Include="DNS\Structures\Header.cs" />
     <Compile Include="DNS\Structures\Packet.cs" />
     <Compile Include="DNS\PacketReader.cs" />
     <Compile Include="DNS\PacketWriter.cs" />
@@ -72,8 +73,8 @@
     <Compile Include="DNS\Service.cs" />
     <Compile Include="DNS\ServiceManager.cs" />
     <Compile Include="DNS\Structures.cs" />
-    <Compile Include="DNS\Interfaces\IServiceListener.cs" />
     <Compile Include="DNS\Interfaces\IServicePublisher.cs" />
+    <Compile Include="MultiNetworkServiceCore.cs" />
     <Compile Include="MultiNetworkServicePublisher.cs" />
     <Compile Include="MultiNetworkServiceWatcher.cs" />
     <Compile Include="Public\Factory.cs" />

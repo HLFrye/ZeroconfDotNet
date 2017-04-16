@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ZeroconfDotNet.DNS.Records
+namespace DiscoveryDotNet.DNS.Records
 {
     public class SRVAnswer :AnswerData
     {

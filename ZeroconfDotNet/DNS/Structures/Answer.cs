@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZeroconfDotNet.DNS.Records;
-using ZeroconfDotNet.DNS.Exceptions;
+using DiscoveryDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Exceptions;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public class Answer
     {

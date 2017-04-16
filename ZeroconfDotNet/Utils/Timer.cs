@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace ZeroconfDotNet.Utils
+namespace DiscoveryDotNet.Utils
 {
     class TimerUtil : ITimer
     {

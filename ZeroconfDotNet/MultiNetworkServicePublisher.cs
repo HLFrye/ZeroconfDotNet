@@ -5,10 +5,10 @@ using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
 
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.Utils;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.Utils;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
     class MultiNetworkServicePublisher : IServicePublisher
     {

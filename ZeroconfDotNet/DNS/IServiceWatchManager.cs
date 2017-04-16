@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     public interface IServiceWatchManager : IDisposable
     {

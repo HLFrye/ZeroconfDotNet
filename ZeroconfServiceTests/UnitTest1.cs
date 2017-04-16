@@ -5,9 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Net;
 
-using ZeroconfDotNet;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.DNS.Records;
+using DiscoveryDotNet;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.DNS.Records;
 
 namespace ZeroconfServiceTests
 {    
@@ -25,8 +25,8 @@ namespace ZeroconfServiceTests
 
             mockCore.Setup(x => x.SendPacket(It.IsAny<Packet>())).Callback<Packet>(x => requestPacket = x).Verifiable();
 
-            thing.WatchService(testServiceLookup, (nic, info) => { });
-
+            var watcher = thing.WatchService(testServiceLookup, (nic, info) => { });
+            watcher.Start();
             var ptr = requestPacket.Queries.Select(x => x.Record).Where(x => x.RecordType == 12).First();
             Assert.AreEqual(1, ptr.Class);
             Assert.AreEqual(testServiceLookup, ptr.Name);

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZeroconfDotNet;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.DNS.Records;
-using ZeroconfDotNet.DNS.Network;
+using DiscoveryDotNet;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.DNS.Records;
+using DiscoveryDotNet.DNS.Network;
 using System.Linq;
 using Moq;
 

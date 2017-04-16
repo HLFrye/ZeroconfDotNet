@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ZeroconfDotNet
+namespace DiscoveryDotNet
 {
     public class ServiceInfo: IEqualityComparer<ServiceInfo>
     {

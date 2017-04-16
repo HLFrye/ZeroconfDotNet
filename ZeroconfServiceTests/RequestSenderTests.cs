@@ -1,8 +1,8 @@
 ﻿using System;
 using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZeroconfDotNet.Utils;
-using ZeroconfDotNet.DNS;
+using DiscoveryDotNet.Utils;
+using DiscoveryDotNet.DNS;
 
 namespace ZeroconfServiceTests
 {

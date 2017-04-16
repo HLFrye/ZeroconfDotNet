@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace ZeroconfDotNet.DNS.Network
+namespace DiscoveryDotNet.DNS.Network
 {
     public delegate void NetworkStatusChangedDelegate(bool wasConnected, bool isConnected);
 

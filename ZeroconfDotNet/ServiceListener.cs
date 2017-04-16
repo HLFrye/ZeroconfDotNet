@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZeroconfDotNet.DNS;
+using DiscoveryDotNet.DNS;
 using System.Net;
 using System.Net.NetworkInformation;
 

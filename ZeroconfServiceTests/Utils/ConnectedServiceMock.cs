@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 
 using Moq;
-using ZeroconfDotNet.DNS;
+using DiscoveryDotNet.DNS;
 
 namespace ZeroconfServiceTests.Utils
 {
@@ -20,7 +20,7 @@ namespace ZeroconfServiceTests.Utils
             Addresses = addrs;
         }
 
-        public event ZeroconfDotNet.DNS.Network.NetworkStatusChangedDelegate NetworkStatusChanged;
+        public event DiscoveryDotNet.DNS.Network.NetworkStatusChangedDelegate NetworkStatusChanged;
 
         public bool Connected
         {
@@ -63,5 +63,8 @@ namespace ZeroconfServiceTests.Utils
         {
             PacketReceived(p, ep);
         }
+
+
+        public event MalformedPacketReceivedDelegate MalformedPacketReceived = delegate { };
     }
 }

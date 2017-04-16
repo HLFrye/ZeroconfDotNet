@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
 
     public class ServiceWatcher
@@ -35,9 +35,9 @@ namespace ZeroconfDotNet.DNS
             _repeater.Stop();
         }
 
-        public void Restart()
+        public void Start()
         {
-            _repeater.Restart();
+            _repeater.Start();
         }
     }
 }

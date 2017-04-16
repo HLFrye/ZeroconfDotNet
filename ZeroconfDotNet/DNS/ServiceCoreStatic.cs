@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
-using ZeroconfDotNet.DNS.Network;
+using DiscoveryDotNet.DNS.Network;
 
-namespace ZeroconfDotNet.DNS
+namespace DiscoveryDotNet.DNS
 {
     partial class ServiceCore
     {

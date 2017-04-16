@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ZeroconfDotNet.DNS.Exceptions;
+using DiscoveryDotNet.DNS.Exceptions;
 
-namespace ZeroconfDotNet.DNS.Records
+namespace DiscoveryDotNet.DNS.Records
 {  
     public class PTRAnswer : AnswerData
     {

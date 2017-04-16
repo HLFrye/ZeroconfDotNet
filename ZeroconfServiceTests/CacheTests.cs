@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ZeroconfDotNet.DNS;
-using ZeroconfDotNet.Utils;
+using DiscoveryDotNet.DNS;
+using DiscoveryDotNet.Utils;
 using Moq;
 
 namespace ZeroconfServiceTests
